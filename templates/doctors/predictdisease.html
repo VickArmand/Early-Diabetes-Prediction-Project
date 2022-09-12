@@ -1,0 +1,44 @@
+{% extends 'doctors/base.html' %}
+{% block content %}
+<div class="container grid place-items-center h-screen">
+  <div class="bg-white py-6 px-12 my-5">
+      <form action="" method="post">
+        <div class="flex flex-col justify-between gap-1 ">
+          <div class="flex justify-between items-center my-2 gap-4">
+            <label for="insulinlevels">Select a Patient</label>
+            <select name="patients" id="">
+              <option value="PID-0024">PID-0024 Victor Maina</option>
+              <option value=""></option>
+            </select>
+        </div>
+          <div class="flex justify-between items-center my-2 gap-4">
+            <label for="glucoselevels">Glucose</label>
+            <input type="range" class="py-2 px-8 rounded bg-inputbg" name="glucoselevels" min="0" max="200" value="100" step="1">
+        </div>
+        <div class="flex justify-between items-center my-2 gap-4">
+          <label for="insulinlevels">Insulin Levels</label>
+          <input type="range" class="py-2 px-8 rounded bg-inputbg" name="insulinlevels" id="" min="0" max="200" value="100" step="1">
+      </div>
+      <div class="flex justify-between items-center my-2 gap-4">
+        <label for="pressurelevels">Pressure Levels</label>
+        <input type="range" class="py-2 px-8 rounded bg-inputbg" name="pressurelevels" id="" min="0" max="200" value="100" step="1">
+    </div>
+      <div class="flex justify-between items-center my-2 gap-4">
+          <label for="height">Height</label>
+          <input type="range" class="py-2 px-8 rounded bg-inputbg" name="height" min="0" max="200" value="100" step="1">
+      </div>
+      <div class="flex justify-between items-center my-2 gap-4">
+        <label for="weight">Weight</label>
+        <input type="range" class="py-2 px-8 rounded bg-inputbg" name="weight" min="0" max="200" value="100" step="1">
+    </div>
+        </div>
+        <div class="flex flex-col items-center  mt-5">
+          <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">PREDICT</button>
+        </div>
+          
+      </form>
+  </div>
+ 
+</div>
+
+{% endblock content %}

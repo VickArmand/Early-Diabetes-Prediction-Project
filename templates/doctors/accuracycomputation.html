@@ -1,0 +1,47 @@
+{% extends 'doctors/base.html' %}
+{% block content %}
+<div class="container grid place-items-center h-screen">    
+  <div class="shadow-lg rounded-lg overflow-hidden">
+    <div class="py-3 px-5 bg-gray-50">Bar chart</div>
+    <canvas class="h-64" id="chartBar"></canvas>
+  </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart bar -->
+<script>
+const labelsBarChart = [
+"Random Forest",
+"SVM",
+"Decision Trees",
+"Logistic regr",
+"KNN",
+"XG Boost",
+];
+const dataBarChart = {
+labels: labelsBarChart,
+datasets: [
+{
+  label: "Accuracy computation",
+  backgroundColor: "hsl(252, 82.9%, 67.8%)",
+  borderColor: "hsl(252, 82.9%, 67.8%)",
+  data: [30, 50, 51, 37, 20, 50, 75],
+},
+],
+};
+
+const configBarChart = {
+type: "bar",
+data: dataBarChart,
+options: {},
+};
+
+var chartBar = new Chart(
+document.getElementById("chartBar"),
+configBarChart
+);
+</script>
+
+{% endblock content %}
+

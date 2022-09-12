@@ -1,0 +1,28 @@
+{% extends 'admins/base.html' %}
+{% block content %}
+<div class="container grid place-items-center my-5">
+  <div class="bg-white py-20 px-20">
+    <table class="table-auto">
+      <thead >
+       <tr class="bg-white border-b  dark:border-gray-700">
+          <th class="py-2 px-3">Doctor Name</th>
+          <th class="py-2 px-3">Phone Number</th>
+          <th class="py-2 px-3">Gender</th>
+          <th class="py-2 px-3">Action</th>
+        </tr>
+       
+      </thead>
+      <tbody>
+        <tr class="bg-white border-b  dark:border-gray-700">
+         <td class="py-2 px-3">Victor Maina</td>
+         <td class="py-2 px-3">0727617870</td>
+         <td class="py-2 px-3">Male</td>
+         <td class="py-2 px-3"><a href=""class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a> <a href=""class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+         </tr>
+       </tbody>
+    </table>
+  </div>
+</div>
+
+      {% endblock content %}
+    

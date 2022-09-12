@@ -1,0 +1,67 @@
+{% extends 'admins/base.html' %}
+{% block content %}
+{% endblock content %}
+      <div class="container grid place-items-center h-screen w-screen">
+        <div class="bg-white py-20 px-20">
+            <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
+              <div class="flex flex-col items-start gap-2">
+                <label for="firstname">First Name</label>
+                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="firstname"  placeholder="First Name">
+            </div>
+            <div class="flex flex-col items-start  gap-2">
+                <label for="lastname">Last Name</label>
+                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="lastname"  placeholder="Last Name">
+            </div>
+            <div class="flex flex-col items-start  gap-2 ">
+                <label for="email">Email Address</label>
+                <input type="email" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="Email Address">
+            </div>
+            <div class="flex flex-col items-start gap-2 ">
+              <label for="gender">Gender</label>
+              <div class="flex gap-2 ">
+                <input type="radio" name="gender" value="male"> Male 
+                <input type="radio" name="gender" value="female"> Female        
+              </div>
+            </div>
+            <div class="flex flex-col items-start  gap-2">
+              <label for="DoB">Date of Birth</label>
+              <input type="date" class="py-2 px-12 rounded bg-inputbg" name="DoB" >
+          </div>
+            <div class="flex flex-col items-start  gap-2">
+                <label for="contact">Contact</label>
+                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="contact"  placeholder="Contact">
+            </div>
+            <div class="flex flex-col items-start gap-2">
+                <label for="">National Identification Number</label>
+                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="National ID Number">
+            </div>
+  
+            <div class="flex flex-col items-start gap-2">
+                <label for="county">County</label>
+                <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
+                    <option value="">--Select A County--</option>
+                </select>                
+            </div>
+            <div class="flex flex-col items-start  gap-2">
+              <label for="residentialarea">Residential Area</label>
+              <!-- <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
+                  <option value="">--Select An Area--</option>
+              </select>                 -->
+              <input type="text" class="py-2 px-12 rounded bg-inputbg" name="residentialarea"  placeholder="Residential Area">
+          </div>
+          <div class="flex flex-col items-start  gap-2">
+            <label for="password">Username</label>
+        <input type="text" class="py-2 px-12 rounded bg-inputbg" name="username"  placeholder="Username">
+        </div>
+            <div class="flex flex-col items-start gap-2">
+                <label for="password">Password</label>
+            <input type="password" class="py-2 px-12 rounded bg-inputbg" name="password"  placeholder="Password">
+            </div>
+            <div class="flex flex-col items-start gap-2">
+              <label for="passwordconfirm">Confirm Password</label>
+          <input type="password" class="py-2 px-12 rounded bg-inputbg" name="passwordconfirm"  placeholder="Confirm Password">
+          </div>
+                <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">ADD DOCTORS</button>
+
+            </form>
+        </div>

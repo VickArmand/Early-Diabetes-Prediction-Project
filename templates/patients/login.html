@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="../../static/style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgcolor: '#E5E5E5',
+            inputbg: '#F9F8F8'
+          },
+          boxShadow: {
+          nav:'4px 4px 9px rgba(179, 179, 179, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bgcolor">
+  <nav class="width-2 bg-white py-3 px-4 box-shadow-nav flex justify-between sticky top-0">
+    <div class="brand-name flex items-center gap-2"><div class="brand-img"></div> MUGEMA'S DIABETES PREDICTION</div>
+<ul class="flex gap-2 items-center justify-end">
+    <li class="list-none"> <a href="/login">Login</a></li>
+    <li class="list-none"> <a href="/register">Register</a></li>
+</ul>
+  </nav>  
+<div class="container grid place-items-center h-screen w-screen">
+    <div class="bg-white py-20 px-20">
+        <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
+          <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
+            <div class="flex justify-between items-center gap-2">
+                <label for="username">Username</label>
+                <input type="text" class="py-2 px-8 rounded bg-inputbg" name="username"  placeholder="Username">
+            </div>
+            <div class="flex justify-between items-center gap-2">
+                <label for="password">Password</label>
+            <input type="password" class="py-2 px-8 rounded bg-inputbg" name="password"  placeholder="Password">
+            </div>
+            <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">LOGIN</button>
+            <span>Don't have an account? <a href="/register" class="text-blue-500">Register Here</a></span>
+            <span><a href="/forgotpwd" class="text-blue-500">Forgot your password</a></span>
+
+        </form>
+    </div>
+   
+</div>
+</body>
+</html>
