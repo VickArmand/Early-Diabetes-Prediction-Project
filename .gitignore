@@ -1,4 +1,4 @@
 #virtual environment
 flaskvenv/
-.ipynb_checkpoints
+.ipynb_checkpoints/
 __pycache__/
