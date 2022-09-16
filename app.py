@@ -1,10 +1,9 @@
 from flask import Flask,render_template,request,url_for,redirect
 import numpy as np
-import pickle
-import xgboost
-import sklearn 
+import xgboost as xgb
+
 app=Flask(__name__)
-filename="diabetespredmodelusingxgboost.pkl"
+
 # Constructing web routes
 @app.route("/")
 def index():
@@ -58,7 +57,19 @@ def doctordashboard():
 def predict():
 
     if request.method=='POST':
-        classifier =pickle.load(open(filename,'rb'))
+        filename="diabetespredmodelusingxgboost.json"
+        xgb_cls=xgb.XGBClassifier(learning_rate =0.0001,
+ n_estimators=1000,
+ max_depth=5,
+ min_child_weight=1,
+ gamma=0,
+ subsample=0.8,
+ colsample_bytree=0.8,
+ objective= 'binary:logistic',
+ nthread=4,
+ scale_pos_weight=1,
+ seed=27)
+        xgb_cls.load_model(filename)
         # pregnanciesno=request.form["pregnanciesno"]
         # glucose=request.form["glucose"]
         # bmi=request.form["bmi"]
@@ -70,10 +81,11 @@ def predict():
         # SkinThickness=request.form["SkinThickness"]
         features=[float(x) for x in request.form.values()]
         finalfeatures=[np.array(features)]
-        sample1=[5,116,74,0,0,25.6,0.201,30]
+        sample1=[6,148,72,35,0,33.6,0.627,50]
+        #sample1=[5,116,74,0,0,25.6,0.201,30]
         sample1=np.array(sample1)
         sample1=sample1.reshape(1,-1)
-        prediction=classifier.predict(sample1)
+        prediction=xgb_cls.predict(sample1)
         if prediction==1:
 
           return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
@@ -95,3 +107,4 @@ def patientnotifications():
     return render_template('/doctors/notifications.html')
 if __name__ == "__main__":
     app.run(debug=True)
+    
