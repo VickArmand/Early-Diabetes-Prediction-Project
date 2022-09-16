@@ -1,8 +1,11 @@
 from flask import Flask,render_template,request,url_for,redirect
 import numpy as np
-import pickle as pk
+import pickle
+import xgboost
+import sklearn 
 app=Flask(__name__)
-model = pk.load(open("diabetespredmodelusingxgboost.pkl","rb"))
+filename="diabetespredmodelusingxgboost.pkl"
+# Constructing web routes
 @app.route("/")
 def index():
     return render_template('homepage.html')
@@ -51,13 +54,11 @@ def doctorlogin():
 @app.route("/doctors/dashboard")
 def doctordashboard():
     return render_template('/doctors/dashboard.html')
-@app.route("/doctors/predict")
+@app.route("/doctors/predict", methods=['POST','GET'])
 def predict():
-    return render_template('/doctors/predictdisease.html')
-@app.route('/predictions',methods=['POST'])
-def predictions():
-    # pass
+
     if request.method=='POST':
+        classifier =pickle.load(open(filename,'rb'))
         # pregnanciesno=request.form["pregnanciesno"]
         # glucose=request.form["glucose"]
         # bmi=request.form["bmi"]
@@ -69,13 +70,20 @@ def predictions():
         # SkinThickness=request.form["SkinThickness"]
         features=[float(x) for x in request.form.values()]
         finalfeatures=[np.array(features)]
-        prediction=model.predict(finalfeatures)
+        sample1=[5,116,74,0,0,25.6,0.201,30]
+        sample1=np.array(sample1)
+        sample1=sample1.reshape(1,-1)
+        prediction=classifier.predict(sample1)
         if prediction==1:
 
-          return render_template("diabetespred.html",pred=prediction)
+          return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
+          objectRep.close()
         if prediction==0:
 
-          return render_template("diabetespred.html",pred=prediction)
+          return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes")
+          objectRep.close()
+    else:
+         return render_template('/doctors/predictdisease.html')
 @app.route("/doctors/accuracy")
 def computeaccuracy():
     return render_template('/doctors/accuracycomputation.html')
