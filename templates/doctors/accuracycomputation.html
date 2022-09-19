@@ -2,10 +2,14 @@
 {% block content %}
 <div class="container grid place-items-center h-screen">    
   <div class="shadow-lg rounded-lg overflow-hidden">
+    
     <div class="py-3 px-5 bg-gray-50">Bar chart</div>
     <canvas class="h-64" id="chartBar"></canvas>
   </div>
-
+  <a href="/doctors/train">Click Here To Generate Metrics</button>
+    {%for metric in metrics%}
+    {{metric}}
+    {%endfor%}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

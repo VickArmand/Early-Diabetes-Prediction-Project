@@ -32,7 +32,8 @@
   </nav>  
 <div class="container grid place-items-center h-screen w-screen">
     <div class="bg-white py-20 px-20">
-        <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
+       
+      <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
           <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
             <div class="flex justify-between items-center gap-2">
                 <label for="username">Username</label>
@@ -47,6 +48,13 @@
             <span><a href="/forgotpwd" class="text-blue-500">Forgot your password</a></span>
 
         </form>
+        {% with messages= get_flashed_messages() %}
+      {%if messages%}
+      {%for msg in messages %}
+      <p>{{msg}}</p>
+      {%endfor%}
+      {%endif%}
+      {%endwith%} 
     </div>
    
 </div>

@@ -19,3 +19,36 @@ nav{
     background-repeat: no-repeat;
     background-size: cover;
 }
+.rangeslider-value{
+    position: absolute;
+    height: 45px;
+    width: 45px;
+    color: rgb(10, 10, 10);
+    font-weight: 500;
+    top: -40px;
+    transform: translateX(-50%) scale(0);
+    transition: transform 0.3s ease-in-out ;
+    transform-origin: bottom;
+    line-height: 55px;
+    z-index: 2;
+}
+.rangeslider-value.show{
+    transform: translateX(-50%) scale(1);
+}
+.rangeslider-value:after{
+    position: absolute;
+    content: "";
+    height: 45px;
+    width: 45px;
+    background: #664AFF;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border: 3px solid #fff;
+    border-top-left-radius:50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    z-index: -1;
+}
+input[type='range']{
+
+}
