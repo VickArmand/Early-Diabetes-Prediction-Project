@@ -65,7 +65,6 @@ class ModelUtils:
             ('model', KNeighborsClassifier(n_neighbors=2,metric="minkowski",p=2)),
         ])
 
-
         modelpipe1.fit(X_train, Y_train)
         # modelpipe2.fit(X_train, Y_train)
         modelpipe3.fit(X_train, Y_train)
@@ -78,14 +77,15 @@ class ModelUtils:
         testpred5=modelpipe5.predict(X_test)
         accuracy={
                 'Logistic Regression':accuracy_score(Y_test,testpred1)*100,
-                'SVM':accuracy_score(Y_test,testpred1)*100,
-                'Random Forest':accuracy_score(Y_test,testpred1)*100,        
-                'K-Nearest Neighbours':accuracy_score(Y_test,testpred1)*100
+                'SVM':accuracy_score(Y_test,testpred3)*100,
+                'Random Forest':accuracy_score(Y_test,testpred4)*100,        
+                'K-Nearest Neighbours':accuracy_score(Y_test,testpred5)*100
                 # 'confusion matrix ':confusion_matrix(Y_test,testpred1),
                 # 'classification report':classification_report(Y_test,testpred1)
             },
+        # accuracy=[accuracy_score(Y_test,testpred1)*100,accuracy_score(Y_test,testpred3)*100,accuracy_score(Y_test,testpred4)*100,accuracy_score(Y_test,testpred5)*100]
         mse={
-                'Logistic_Regression': mean_squared_error(Y_test,testpred1),
+                'Logistic Regression': mean_squared_error(Y_test,testpred1),
                 'SVM': mean_squared_error(Y_test,testpred3),
                 'Random Forest': mean_squared_error(Y_test,testpred4),
                 'K-Nearest Neighbours': mean_squared_error(Y_test,testpred5),

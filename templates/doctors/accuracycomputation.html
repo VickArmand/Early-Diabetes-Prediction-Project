@@ -3,26 +3,31 @@
 <div class="container grid place-items-center h-screen">    
   <div class="shadow-lg rounded-lg overflow-hidden">
     
-    <div class="py-3 px-5 bg-gray-50">Bar chart</div>
+    <!-- <div class="py-3 px-5 bg-gray-50">Bar chart</div>
     <canvas class="h-64" id="chartBar"></canvas>
-  </div>
-  <a href="/doctors/train">Click Here To Generate Metrics</button>
-    {%for metric in metrics%}
-    {{metric}}
-    {%endfor%}
+  </div> -->
+   <!-- <p> Algorithm used is: Support Vector Machine
+    It's accuracy is:</p>  -->
+    <div class=" grid place-items-center py-3 px-5 ml-5 bg-gray-50">
+      <p> {%for x in metrics%}
+        <br>{{x}}<br>
+  
+        {%endfor%}</p>
+     
+    </div>
+  
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Chart bar -->
-<script>
+<!-- <script>
 const labelsBarChart = [
-"Random Forest",
-"SVM",
-"Decision Trees",
 "Logistic regr",
-"KNN",
-"XG Boost",
+"SVM",
+"Random Forest",
+"KNN"
 ];
+
 const dataBarChart = {
 labels: labelsBarChart,
 datasets: [
@@ -30,7 +35,9 @@ datasets: [
   label: "Accuracy computation",
   backgroundColor: "hsl(252, 82.9%, 67.8%)",
   borderColor: "hsl(252, 82.9%, 67.8%)",
-  data: [30, 50, 51, 37, 20, 50, 75],
+  data: [
+
+  ],
 },
 ],
 };
@@ -45,7 +52,7 @@ var chartBar = new Chart(
 document.getElementById("chartBar"),
 configBarChart
 );
-</script>
+</script> -->
 
 {% endblock content %}
 

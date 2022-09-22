@@ -3,11 +3,17 @@ import numpy as np
 import xgboost as xgb
 import os
 import pickle as pk
+from models.patients import Patients
 from modelutils import ModelUtils as mutils
 # predict,datapreprocessing,train,modelgeneration,computemetrics
 from sendnotification import sendmail
 from datetime import timedelta
+from flask_sqlalchemy import SQLAlchemy
 app=Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///diabetespred.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
+
+db=SQLAlchemy(app)
 app.permanent_session_lifetime=timedelta(hours=3)
 app.secret_key='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 datasetpath='./static/Datasets'
@@ -24,30 +30,53 @@ def index():
 @app.route("/login",methods=["POST","GET"])
 def login():
     if request.method=='POST':
-        session.permanent=True
-        user=request.form['username']
-        session['user']=user
-        flash(f'Login successful welcome {user}')
+        patientuname=request.form['username']
+        isAPatient=Patients.query.filter_by(username=patientuname).first()
+        if isAPatient:
+            session.permanent=True
+            session['patient']=patientuname
+            session['patientid']=isAPatient.id
+            flash(f'Login successful welcome {patientuname}')
+        else:
+            flash("Patient doesn't exist")
+
         return redirect(url_for('dashboard'))
     else: 
-        if 'user' in session:
+        if 'patient' in session:
             flash('Already logged in')
             return redirect(url_for('dashboard'))  
         return render_template('/patients/login.html')
 @app.route("/logout")
 def logout():
-    if 'user' in session:
-        user=session['user']    
+    if 'patient' in session:
+        user=session['patient']    
         flash('You have been logged out!','info')
-    session.pop('user',None)
+    session.pop('patient',None)
     return redirect(url_for("login"))
 @app.route("/register",methods=["POST","GET"])
 def register():
-    return render_template('/patients/register.html')
+    if request.method=='POST':
+        email=request.form['email']
+        fname=request.form['firstname']
+        lname=request.form['lastname']
+        gender=request.form['gender']
+        dateofbirth=request.form['DoB']
+        contact=request.form['contact']
+        county=request.form['county']
+        area=request.form['residentialarea']
+        uname=request.form['username']
+        password=request.form['password']
+        confirmpassword=request.form['passwordconfirm']
+        patient=Patients(db,fname,lname,email,password,gender,dateofbirth,contact,county,area,uname)
+        db.session.add(patient)
+        db.session.commit()
+        return render_template('/patients/register.html')
+    else:
+         return render_template('/patients/register.html')
 @app.route("/dashboard")
 def dashboard():
-    if 'user' in session:
-        user=session['user']
+    if 'patient' in session:
+        user=session['patient']
         return render_template('/patients/dashboard.html',user=user)
     else:
         flash('You are not logged in')
@@ -74,7 +103,7 @@ def managedoctors():
 @app.route("/admin/newdoctors",methods=["POST","GET"])
 def newdoctors():
     return render_template('/admins/newdoctors.html')
-@app.route("/admin/newadmin")
+@app.route("/admin/newadmin",methods=["POST","GET"])
 def newadmin():
     return render_template('/admins/newadmin.html')
 # Doctors
