@@ -2,3 +2,4 @@
 flaskvenv/
 .ipynb_checkpoints/
 __pycache__/
+app/__pycache__/

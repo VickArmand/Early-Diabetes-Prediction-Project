@@ -1,84 +1,17 @@
-from flask import Flask,render_template,request,url_for,redirect,session,flash
-import numpy as np
-import xgboost as xgb
+from flask import render_template,request,url_for,redirect,session,flash
 import os
-import pickle as pk
-from forms import * 
-from modelutils import ModelUtils as mutils
-# predict,datapreprocessing,train,modelgeneration,computemetrics
-from sendnotification import sendmail
-from datetime import timedelta
-from flask_sqlalchemy import SQLAlchemy
-app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///diabetespred.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
-app.config['SECRET_KEY']='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
-db=SQLAlchemy(app)
-app.permanent_session_lifetime=timedelta(hours=3)
+from app import app,xgb,pk,np,db
+from app.models import *
+from app.forms import * 
+from app.modelutils import ModelUtils as mutils
+
+# Constructing web routes
 datasetpath='./static/Datasets'
 datasetfile= "diabetes.csv"
 datasetpathfile=os.path.join(datasetpath,datasetfile)
 modelspath='./static/ML Model'
 modelfile= "diabetespredmodelusingxgboost.pkl"
 modelpathfile=os.path.join(modelspath,modelfile)
-
-class Patients(db.Model):
-    id=db.Column("id",db.Integer,primary_key=True)
-    fname=db.Column("firstname",db.String(100))
-    lname=db.Column("lastname",db.String(100))
-    email=db.Column("email",db.String(100))
-    gender=db.Column("gender",db.String(20))
-    dateofbirth=db.Column("DoB",db.String(20))
-    contact=db.Column("contact",db.String(20))
-    county=db.Column("county",db.String(20))
-    area=db.Column("Region",db.String(20))
-    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
-        self.id=id
-        self.fname=fname
-        self.lname=lname
-        self.email=email
-        self.gender=gender
-        self.dateofbirth=dateofbirth
-        self.contact=contact
-        self.county=county
-        self.area=area
-class Admins(db.Model):
-    id=db.Column("id",db.Integer,primary_key=True)
-    fname=db.Column("firstname",db.String(100))
-    lname=db.Column("lastname",db.String(100))
-    email=db.Column("email",db.String(100))
-    gender=db.Column("gender",db.String(20))
-    dateofbirth=db.Column("DoB",db.String(20))
-    contact=db.Column("contact",db.String(20))
-    county=db.Column("county",db.String(20))
-    area=db.Column("Region",db.String(20))
-    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
-        self.id=id
-        self.fname=fname
-        self.lname=lname
-        self.email=email
-        self.gender=gender
-        self.dateofbirth=dateofbirth
-        self.contact=contact
-        self.county=county
-        self.area=area
-class PatientCredentials(db.Model):
-    patientid=db.Column("id",db.Integer,primary_key=True)
-    uname=db.Column("username",db.String(20))
-    password=db.Column("password",db.String(20))
-    def __init__(self,patientid,uname,password):
-        self.id=patientid
-        self.uname=uname
-        self.password=password
-class AdminCredentials(db.Model):
-    adminid=db.Column("id",db.Integer,primary_key=True)
-    uname=db.Column("username",db.String(20))
-    password=db.Column("password",db.String(20))
-    def __init__(self,adminid,uname,password):
-        self.id=adminid
-        self.uname=uname
-        self.password=password
-# Constructing web routes
 @app.route("/")
 def index():
     return render_template('homepage.html')
@@ -220,8 +153,3 @@ def doctorsreports():
 @app.route("/doctors/messages")
 def patientnotifications():
     return render_template('/doctors/notifications.html')
-if __name__ == "__main__":
-    # for creating the db
-    # db.create_all()
-    app.run(debug=True)
-    
