@@ -3,7 +3,7 @@ import numpy as np
 import xgboost as xgb
 import os
 import pickle as pk
-from models.patients import Patients
+from forms import * 
 from modelutils import ModelUtils as mutils
 # predict,datapreprocessing,train,modelgeneration,computemetrics
 from sendnotification import sendmail
@@ -12,16 +12,72 @@ from flask_sqlalchemy import SQLAlchemy
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///diabetespred.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
-
+app.config['SECRET_KEY']='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 db=SQLAlchemy(app)
 app.permanent_session_lifetime=timedelta(hours=3)
-app.secret_key='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 datasetpath='./static/Datasets'
 datasetfile= "diabetes.csv"
 datasetpathfile=os.path.join(datasetpath,datasetfile)
 modelspath='./static/ML Model'
 modelfile= "diabetespredmodelusingxgboost.pkl"
 modelpathfile=os.path.join(modelspath,modelfile)
+
+class Patients(db.Model):
+    id=db.Column("id",db.Integer,primary_key=True)
+    fname=db.Column("firstname",db.String(100))
+    lname=db.Column("lastname",db.String(100))
+    email=db.Column("email",db.String(100))
+    gender=db.Column("gender",db.String(20))
+    dateofbirth=db.Column("DoB",db.String(20))
+    contact=db.Column("contact",db.String(20))
+    county=db.Column("county",db.String(20))
+    area=db.Column("Region",db.String(20))
+    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
+        self.id=id
+        self.fname=fname
+        self.lname=lname
+        self.email=email
+        self.gender=gender
+        self.dateofbirth=dateofbirth
+        self.contact=contact
+        self.county=county
+        self.area=area
+class Admins(db.Model):
+    id=db.Column("id",db.Integer,primary_key=True)
+    fname=db.Column("firstname",db.String(100))
+    lname=db.Column("lastname",db.String(100))
+    email=db.Column("email",db.String(100))
+    gender=db.Column("gender",db.String(20))
+    dateofbirth=db.Column("DoB",db.String(20))
+    contact=db.Column("contact",db.String(20))
+    county=db.Column("county",db.String(20))
+    area=db.Column("Region",db.String(20))
+    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
+        self.id=id
+        self.fname=fname
+        self.lname=lname
+        self.email=email
+        self.gender=gender
+        self.dateofbirth=dateofbirth
+        self.contact=contact
+        self.county=county
+        self.area=area
+class PatientCredentials(db.Model):
+    patientid=db.Column("id",db.Integer,primary_key=True)
+    uname=db.Column("username",db.String(20))
+    password=db.Column("password",db.String(20))
+    def __init__(self,patientid,uname,password):
+        self.id=patientid
+        self.uname=uname
+        self.password=password
+class AdminCredentials(db.Model):
+    adminid=db.Column("id",db.Integer,primary_key=True)
+    uname=db.Column("username",db.String(20))
+    password=db.Column("password",db.String(20))
+    def __init__(self,adminid,uname,password):
+        self.id=adminid
+        self.uname=uname
+        self.password=password
 # Constructing web routes
 @app.route("/")
 def index():
@@ -29,28 +85,32 @@ def index():
 # Patients
 @app.route("/login",methods=["POST","GET"])
 def login():
+    form=LoginForm()
     if request.method=='POST':
-        patientuname=request.form['username']
-        isAPatient=Patients.query.filter_by(username=patientuname).first()
-        if isAPatient:
-            session.permanent=True
-            session['patient']=patientuname
-            session['patientid']=isAPatient.id
-            flash(f'Login successful welcome {patientuname}')
-        else:
-            flash("Patient doesn't exist")
+        if form.validate_on_submit():
+            return redirect(url_for('dashboard'))
+        # patientemail=form.email.data
+        # isAPatient=PatientCredentials.query.filter_by(id=patientemail).first()
+        # if isAPatient:
+        #     session.permanent=True
+        #     session['patient']=patientemail
+        #     session['patientid']=isAPatient.id
+        #     flash(f'Login successful welcome {patientemail}','success')
+        # else:
+        #     flash("Patient doesn't exist",'warning')
 
-        return redirect(url_for('dashboard'))
-    else: 
-        if 'patient' in session:
-            flash('Already logged in')
-            return redirect(url_for('dashboard'))  
-        return render_template('/patients/login.html')
+        # return redirect(url_for('dashboard'))
+    # else:   
+    #     if 'patient' in session:
+    #         flash('Already logged in','success')
+    #         return redirect(url_for('dashboard'))
+       
+    return render_template('/patients/login.html',form=form)
 @app.route("/logout")
 def logout():
     if 'patient' in session:
         user=session['patient']    
-        flash('You have been logged out!','info')
+        flash('You have been logged out!','success')
     session.pop('patient',None)
     return redirect(url_for("login"))
 @app.route("/register",methods=["POST","GET"])
@@ -72,15 +132,18 @@ def register():
         db.session.commit()
         return render_template('/patients/register.html')
     else:
-         return render_template('/patients/register.html')
+        form=RegistrationForm()
+        return render_template('/patients/register.html',form=form)
 @app.route("/dashboard")
 def dashboard():
-    if 'patient' in session:
-        user=session['patient']
-        return render_template('/patients/dashboard.html',user=user)
-    else:
-        flash('You are not logged in')
-        return redirect(url_for('login'))
+    # if 'patient' in session:
+    #     user=session['patient']
+    #     return render_template('/patients/dashboard.html',user=user)
+    # else:
+    #     flash('You are not logged in','warning')
+    #     return redirect(url_for('login'))
+    return render_template('/patients/dashboard.html',user=[])
+
 @app.route("/editinfo",methods=["POST","GET"])
 def editinfo():
     return render_template('/patients/editinfo.html')
@@ -153,10 +216,12 @@ def computeaccuracy():
     return render_template('/doctors/accuracycomputation.html',metrics=mutils.computemetrics(X,Y))
 @app.route("/doctors/reports")
 def doctorsreports():
-    return render_template('/doctors/reports.html')
+    return render_template('/doctors/reports.html',patients=Patients.query.all())
 @app.route("/doctors/messages")
 def patientnotifications():
     return render_template('/doctors/notifications.html')
 if __name__ == "__main__":
+    # for creating the db
+    # db.create_all()
     app.run(debug=True)
     

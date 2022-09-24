@@ -1,6 +1,6 @@
 {% extends 'doctors/base.html' %}
 {% block content %}
-<div class="grid place-content-center relative top-14">
+<div class="grid place-content-center ">
   <div class="bg-white py-6 px-12 my-5">
     <form action="">
       <div class="flex justify-between gap-2 items-center">
@@ -21,10 +21,9 @@
             <option value="Non-diabetic">Non-diabetic</option>
           </select>
         </div>
-       
       </div>
-     
-    </form>
+      </form>
+   
       <table class="table-auto">
           <thead >
            <tr class="bg-white border-b  dark:border-gray-700">
@@ -36,6 +35,7 @@
             </tr>
            
           </thead>
+          {% for item in patients %}
           <tbody>
            <tr class="bg-white border-b  dark:border-gray-700">
             <td class="py-2 px-3">Victor Maina</td>
@@ -44,7 +44,15 @@
             <td class="py-2 px-3">Kiambu</td>
             <td class="py-2 px-3">Non-diabetic</td>
             </tr>
+            <tr class="bg-white border-b  dark:border-gray-700">
+              <td class="py-2 px-3">{{item.firstname +" "+item.lastname}}</td>
+              <td class="py-2 px-3">{{item.firstname}}</td>
+              <td class="py-2 px-3">{{item.gender}}</td>
+              <td class="py-2 px-3">{{iem.county}}</td>
+              <td class="py-2 px-3">Non-diabetic</td>
+              </tr>
           </tbody>
+          {% endfor %}
       </table>
   </div>
  

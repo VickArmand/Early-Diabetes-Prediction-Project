@@ -100,7 +100,19 @@
             <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">REGISTER</button>
             <span>Already have an account? <a href="/login" class="text-blue-500">Login</a></span>
           </div>
-            
+          {% with messages= get_flashed_messages(with_categories=true) %}
+          {%if messages %}
+          {%for category, msg in messages %}
+            {%if category=='warning'%}
+            <p class="text-orange-500">{{msg}}</p>
+            {% elif category=='success' %}
+            <p class="text-green-500">{{msg}}</p>
+            {% else %}
+            <p class="text-blue-500">{{msg}}</p>
+          {%endif%}
+          {%endfor%}
+          {%endif%}
+      {%endwith%} 
         </form>
     </div>
    

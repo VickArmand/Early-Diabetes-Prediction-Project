@@ -36,25 +36,45 @@
       <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
           <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
             <div class="flex justify-between items-center gap-2">
-                <label for="username">Username</label>
-                <input type="text" class="py-2 px-8 rounded bg-inputbg" name="username"  placeholder="Username">
+              {{form.hidden_tag()}} 
+              {{form.email.label()}} 
+              {{form.email(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
+             
             </div>
+            {%if form.email.errors%}
+            {%for error in form.email.errors%}
+            <span class="text-red-500">{{error}}</span>
+            {%endfor%}
+            {%endif%}
             <div class="flex justify-between items-center gap-2">
-                <label for="password">Password</label>
-            <input type="password" class="py-2 px-8 rounded bg-inputbg" name="password"  placeholder="Password">
+              {{form.password.label()}} 
+              {{form.password(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your password')}}  
+              
             </div>
-            <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">LOGIN</button>
-            <span>Don't have an account? <a href="/register" class="text-blue-500">Register Here</a></span>
+            {%if form.password.errors%}
+              {%for error in form.password.errors%}
+              <span class="text-red-500">{{error}}</span>
+              {%endfor%}
+              {%endif%} 
+            {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
+  
+            <span>Don't have an account? <a href="{{url_for('register')}}" class="text-blue-500">Register Here</a></span>
             <span><a href="/forgotpwd" class="text-blue-500">Forgot your password</a></span>
-
+            {% with messages= get_flashed_messages(with_categories=true) %}
+            {%if messages %}
+            {%for category, msg in messages %}
+              {%if category=='warning'%}
+              <p class="text-orange-500">{{msg}}</p>
+              {% elif category=='success' %}
+              <p class="text-green-500">{{msg}}</p>
+              {% else %}
+              <p class="text-blue-500">{{msg}}</p>
+            {%endif%}
+            {%endfor%}
+            {%endif%}
+        {%endwith%}
         </form>
-        {% with messages= get_flashed_messages() %}
-      {%if messages%}
-      {%for msg in messages %}
-      <p>{{msg}}</p>
-      {%endfor%}
-      {%endif%}
-      {%endwith%} 
+       
     </div>
    
 </div>
