@@ -4,13 +4,15 @@
   <div class="bg-white py-6 px-12 my-5">
       <form action="" method="post">
         <div class="flex flex-col justify-between gap-1 ">
-          <!--<div class="flex justify-between items-center my-2 gap-4">
+          <div class="flex justify-between items-center my-2 gap-4">
             <label for="insulinlevels">Select a Patient</label>
-            <select name="patients" id="">
-              <option value="PID-0024">PID-0024 Victor Maina</option>
-              <option value=""></option>
+            <select name="patientid" id="">
+              <option value="">Select A Patient</option>
+              {%for patient in patients%}
+              <option value="{{patient.id}}">{{patient.fname +" "+ patient.lname}}</option>
+              {%endfor%}
             </select>
-        </div>-->
+        </div>
         <div class="flex justify-between items-center my-2 gap-4">
           <label for="glucoselevels"><b>Pregnancies</b></label>
           <p class="rangeslider-value">0</p>

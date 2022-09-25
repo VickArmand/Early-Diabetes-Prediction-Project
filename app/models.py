@@ -17,7 +17,7 @@ class Patients(db.Model, UserMixin):
     area=db.Column("Region",db.String(20),nullable=False)
     predpatientid=db.relationship('Predictions', backref='predictedpat',lazy=True)
     registeredpatientid=db.relationship('PatientCredentials', backref='registeredpat',lazy=True)
-    patientmsgid=db.relationship('PatientMessages', backref='recipient',lazy=True)
+    patientmsgid=db.relationship('PatientMessages', backref='recipientpat',lazy=True)
     # def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
     #     self.id=id
     #     self.fname=fname
@@ -63,11 +63,7 @@ class PatientCredentials(db.Model):
     date_posted=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status=db.Column(db.String(20),nullable=False,default="Activated")
     patientregistered=db.Column(db.Integer,db.ForeignKey('patients.id'),nullable=False)
-
-    def __init__(self,patientid,uname,password):
-        self.id=patientid
-        self.uname=uname
-        self.password=password
+    
 class AdminCredentials(db.Model):
     adminid=db.Column("id",db.Integer,primary_key=True)
     uname=db.Column("username",db.String(20),unique=True, nullable=False)
@@ -99,7 +95,7 @@ class Predictions(db.Model):
     insulin=db.Column("insulin",db.Float,nullable=False)
     bmi=db.Column("BMI",db.Float,nullable=False)
     age=db.Column("age",db.Integer,nullable=False)
-    bloodpressure=db.Column("BloodPressure",db.Float,nullable=False)
+    # bloodpressure=db.Column("BloodPressure",db.Float,nullable=False)
     outcome=db.Column("outcome",db.Integer,nullable=False)
     date_predicted=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     patientpred=db.Column(db.Integer,db.ForeignKey('patients.id'),nullable=False)

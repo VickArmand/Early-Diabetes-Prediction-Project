@@ -6,10 +6,10 @@ from app.forms import *
 from app.modelutils import ModelUtils as mutils
 from flask_login import login_user,current_user,logout_user,login_required
 # Constructing web routes
-datasetpath='./static/Datasets'
+datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
 datasetpathfile=os.path.join(datasetpath,datasetfile)
-modelspath='./static/ML Model'
+modelspath='./app/static/ML Model'
 modelfile= "diabetespredmodelusingxgboost.pkl"
 modelpathfile=os.path.join(modelspath,modelfile)
 
@@ -66,12 +66,13 @@ def register():
     if request.method=='POST':
         if form.validate_on_submit():
             hashed_password=bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            
             patient=Patients(fname=form.firstname.data,lname=form.lastname.data,email=form.email.data,gender=form.gender.data,county=form.county.data,dateofbirth=form.DoB.data,contact=form.contact.data,area=form.area.data)
-            patientcredentials=PatientCredentials(uname=form.username.data,password=hashed_password)
             db.session.add(patient)
+            db.session.commit()
+            patientcredentials=PatientCredentials(uname=form.username.data,password=hashed_password,patientregistered=patient.id)
             db.session.add(patientcredentials)
             db.session.commit()
+            
             flash('Your account has been created. You are now able to login ','success')
             return redirect(url_for('login'))
         else:
@@ -88,11 +89,21 @@ def dashboard():
     #     flash('You are not logged in','warning')
     #     return redirect(url_for('login'))
     return render_template('/patients/dashboard.html')
+@app.route("/changepwd",methods=["POST","GET"])
+@login_required
+def changepwd():
+    form=ChangePasswordForm()
+    if request.method=='POST':
+        pass    
 
+    return render_template('/patients/changepassword.html',form=form)
 @app.route("/editinfo",methods=["POST","GET"])
 @login_required
 def editinfo():
-    return render_template('/patients/editinfo.html')
+    form=UpdateForm()
+    if request.method=='POST':
+        pass    
+    return render_template('/patients/editinfo.html',form=form)
 @app.route("/monitorprogress")
 @login_required
 def monitorprogress():
@@ -134,7 +145,7 @@ def doctorlogin():
 def doctordashboard():
     return render_template('/doctors/dashboard.html')
 @app.route("/doctors/predict", methods=['POST','GET'])
-@login_required
+# @login_required
 def predict():
     if request.method=='POST':
         classifier=pk.load(open(modelpathfile,'rb'))
@@ -145,6 +156,7 @@ def predict():
         bmi=float(weight)/(float(height)**2)
         insulin=request.form["insulinlevels"]
         Age=request.form["age"]
+        patientid=int(request.form['patientid'])
         # bloodpressure=request.form["pressurelevels"]
         pedigree=request.form["Pedigree"]
         SkinThickness=request.form["skinthickness"]
@@ -154,12 +166,20 @@ def predict():
         features=np.array(features)
         features=features.reshape(1,-1)
         predictionvalue=classifier.predict(features)
+        
+        patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
+        patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
+        age=datetime.now().year-patientdob.year
+        print (age)
+        predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
+        db.session.add(predictionresults)
+        db.session.commit()
         if predictionvalue==1:
           return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
         if predictionvalue==0:
           return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes")
     else:
-         return render_template('/doctors/predictdisease.html')
+         return render_template('/doctors/predictdisease.html',patients=Patients.query.all())
 @app.route("/doctors/train")
 @login_required
 def trainmodel():
