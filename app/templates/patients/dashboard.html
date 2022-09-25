@@ -2,8 +2,14 @@
 {% block content %}
 <div class="container grid place-items-center my-5">
   <div class="bg-white py-20 px-20">
-  {{user}}
- 
+    <p>Welcome back  {{current_user.username}} </p>
+    Current progress:
+    Patient Details:
+    Email: {{current_user.email}}
+    Name: {{current_user.firstname}}{{current_user.lastname}}
+    Contact: {{current_user.contact}}
+    <a href="{{url_for('editinfo')}}" class="bg-blue-500 rounded px-4 py-2 text-white">EDIT DETAILS</a>
+    <a href="{{url_for('changepwd')}}" class="bg-blue-500 rounded px-4 py-2 text-white">CHANGE PASSWORD</a>
   </div>
 </div>
 {% endblock content %}

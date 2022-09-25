@@ -1,6 +1,11 @@
 from datetime import datetime
-from app import db
-class Patients(db.Model):
+from app import db,login_manager
+from flask_login import UserMixin
+@login_manager.user_loader
+def load_user(patient_id):
+    return Patients.query.get(int(patient_id))
+
+class Patients(db.Model, UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
     lname=db.Column("lastname",db.String(100),nullable=False)
@@ -13,17 +18,17 @@ class Patients(db.Model):
     predpatientid=db.relationship('Predictions', backref='predictedpat',lazy=True)
     registeredpatientid=db.relationship('PatientCredentials', backref='registeredpat',lazy=True)
     patientmsgid=db.relationship('PatientMessages', backref='recipient',lazy=True)
-    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
-        self.id=id
-        self.fname=fname
-        self.lname=lname
-        self.email=email
-        self.gender=gender
-        self.dateofbirth=dateofbirth
-        self.contact=contact
-        self.county=county
-        self.area=area
-class Admins(db.Model):
+    # def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
+    #     self.id=id
+    #     self.fname=fname
+    #     self.lname=lname
+    #     self.email=email
+    #     self.gender=gender
+    #     self.dateofbirth=dateofbirth
+    #     self.contact=contact
+    #     self.county=county
+    #     self.area=area
+class Admins(db.Model,UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
     lname=db.Column("lastname",db.String(100),nullable=False)
@@ -39,7 +44,7 @@ class Admins(db.Model):
         self.gender=gender
         self.dateofbirth=dateofbirth
         self.contact=contact
-class Doctors(db.Model):
+class Doctors(db.Model,UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
     lname=db.Column("lastname",db.String(100),nullable=False)
