@@ -36,6 +36,7 @@
           {{form.hidden_tag()}}
           <div class="flex flex-col items-center gap-2">
             <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
+            <h3 class="">{{title}}</h3>
           </div>
           <div class="flex flex-col gap-2 items-start">
             
@@ -127,7 +128,7 @@
                   <option value="">--Select A County--</option>
               </select>                 -->
               {{form.county.label()}} 
-              {{form.county(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your Residential Area')}}  
+              {{form.county(class='py-2 px-8 rounded bg-inputbg')}}  
               
           </div>
           {%if form.county.errors%}

@@ -15,6 +15,7 @@ import sys
 sys.setrecursionlimit(10000)
 
 class ModelUtils:
+    # Method for performing data preprocessings
     def datapreprocessing(diabetesdataurl):
         diabetesdata= pd.read_csv(diabetesdataurl)
         diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']] = diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']].replace(0,np.NaN)
@@ -24,6 +25,7 @@ class ModelUtils:
         # scaler = StandardScaler()
         # X = scaler.fit_transform(X)
         return X,Y
+    # Method for model training which returns accuracy and saves model in a file
     def train(X,Y):  
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
         classifier=svm.SVC(kernel='linear')
@@ -32,7 +34,7 @@ class ModelUtils:
         testpreds=classifier.predict(X_test)
         testaccuracy=accuracy_score(Y_test,testpreds)*100
         f1score= f1_score(Y_test,testpreds, average=None)        
-        modelspath='./static/ML Model'
+        modelspath='./app/static/ML Model'
         modelfile= "diabetespredmodelusingxgboost.pkl"
         modelpathfile=os.path.join(modelspath,modelfile)
         if not os.path.isdir(modelspath):
@@ -43,28 +45,14 @@ class ModelUtils:
         else:
             os.remove(modelpathfile)
             pk.dump(classifier,open(modelpathfile,'wb'))
-
         return testaccuracy,f1score
  
     def computemetrics(X,Y):
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
-
-        modelpipe1=Pipeline([
-            ('model', LogisticRegression()),
-        ])
-        modelpipe3=Pipeline([
-            
-            ('model', svm.SVC(kernel='linear')),
-        ])
-        modelpipe4=Pipeline([
-            
-            ('model', RandomForestClassifier(n_estimators=2,criterion="entropy")),
-        ])
-        modelpipe5=Pipeline([
-            
-            ('model', KNeighborsClassifier(n_neighbors=2,metric="minkowski",p=2)),
-        ])
-
+        modelpipe1=Pipeline([('model', LogisticRegression()),])
+        modelpipe3=Pipeline([ ('model', svm.SVC(kernel='linear')),])
+        modelpipe4=Pipeline([('model', RandomForestClassifier(n_estimators=2,criterion="entropy")),])
+        modelpipe5=Pipeline([('model', KNeighborsClassifier(n_neighbors=2,metric="minkowski",p=2)),])
         modelpipe1.fit(X_train, Y_train)
         # modelpipe2.fit(X_train, Y_train)
         modelpipe3.fit(X_train, Y_train)

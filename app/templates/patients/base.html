@@ -31,8 +31,8 @@
         <li class="list-none"> <a href="/register">{{current_user.username}}</a></li>
         <li class="list-none"><a href="{{url_for('logout')}}" class="bg-blue-500 rounded px-4 py-2 text-white">Logout</a></li>
         {%else%}
-        <li class="list-none"> <a href="{{url_for('login')}}">Login</a></li>
-        <li class="list-none"> <a href="{{url_for('register')}}">Register</a></li>
+        <li class="list-none"> <a class="bg-blue-500 rounded px-4 py-2 text-white" href="{{url_for('login')}}">Login</a></li>
+        <li class="list-none"> <a class="bg-green-500 rounded px-4 py-2 text-white" href="{{url_for('register')}}">Register</a></li>
         {%endif%}
     </ul>
   </nav> 
@@ -60,6 +60,7 @@
      
         </ul>
       </aside>
+
       {% with messages= get_flashed_messages(with_categories=true) %}
       {%if messages %}
       {%for category, msg in messages %}
@@ -73,5 +74,7 @@
       {%endfor%}
       {%endif%}
   {%endwith%} 
+  {% block content %}
+  {% endblock content %}
     </body>
     </html>

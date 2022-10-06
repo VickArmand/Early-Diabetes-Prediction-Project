@@ -1,18 +1,39 @@
 {% extends 'doctors/base.html' %}
 {% block content %}
-<div class="container grid place-items-center h-screen">    
+<div class="container grid place-items-center my-5">    
   <div class="shadow-lg rounded-lg overflow-hidden">
-    
+    <a class="bg-blue-500 rounded px-4 py-2 text-white" href="/doctors/train">TRAIN MODEL</a>
+    <a class="bg-green-500 rounded px-4 py-2 text-white" href="/doctors/accuracy">COMPUTE MODEL METRICS</a>
+
     <!-- <div class="py-3 px-5 bg-gray-50">Bar chart</div>
     <canvas class="h-64" id="chartBar"></canvas>
   </div> -->
    <!-- <p> Algorithm used is: Support Vector Machine
     It's accuracy is:</p>  -->
-    <div class=" grid place-items-center py-3 px-5 ml-5 bg-gray-50">
-      <p> {%for x in metrics%}
-        <br>{{x}}<br>
-  
+    <div class="flex-col place-items-center py-3 px-5 ml-5 bg-gray-50">
+      {%if metrics %}
+       {%for x in metrics[0]%}
+
+        <p>Logistic Regression Accuracy: {{x['Logistic Regression']}}</p>
+        <p>SVM Accuracy: {{x['SVM']}}</p>
+        <p>Random Forest Accuracy: {{x['Random Forest']}}</p>
+        <p>K-Nearest Neighbours Accuracy: {{x['K-Nearest Neighbours']}}</p>
+
+       
+
         {%endfor%}</p>
+        {%for x in metrics[1]%}
+
+        <p>Logistic Regression Mean Squred Error: {{x['Logistic Regression']}}</p>
+        <p>SVM Mean Squred Error: {{x['SVM']}}</p>
+        <p>Random Forest Mean Squred Error: {{x['Random Forest']}}</p>
+        <p>K-Nearest Neighbours Mean Squred Error: {{x['K-Nearest Neighbours']}}</p>
+
+       
+
+        {%endfor%}
+      {%endif%}</p>
+
      
     </div>
   

@@ -4,7 +4,6 @@ from flask_login import UserMixin
 @login_manager.user_loader
 def load_user(patient_id):
     return Patients.query.get(int(patient_id))
-
 class Patients(db.Model, UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
