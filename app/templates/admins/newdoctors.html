@@ -1,67 +1,199 @@
 {% extends 'admins/base.html' %}
 {% block content %}
-{% endblock content %}
-      <div class="container grid place-items-center h-screen w-screen">
-        <div class="bg-white py-20 px-20">
-            <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
-              <div class="flex flex-col items-start gap-2">
-                <label for="firstname">First Name</label>
-                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="firstname"  placeholder="First Name">
-            </div>
-            <div class="flex flex-col items-start  gap-2">
-                <label for="lastname">Last Name</label>
-                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="lastname"  placeholder="Last Name">
-            </div>
-            <div class="flex flex-col items-start  gap-2 ">
-                <label for="email">Email Address</label>
-                <input type="email" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="Email Address">
-            </div>
-            <div class="flex flex-col items-start gap-2 ">
-              <label for="gender">Gender</label>
-              <div class="flex gap-2 ">
-                <input type="radio" name="gender" value="male"> Male 
-                <input type="radio" name="gender" value="female"> Female        
-              </div>
-            </div>
-            <div class="flex flex-col items-start  gap-2">
-              <label for="DoB">Date of Birth</label>
-              <input type="date" class="py-2 px-12 rounded bg-inputbg" name="DoB" >
-          </div>
-            <div class="flex flex-col items-start  gap-2">
-                <label for="contact">Contact</label>
-                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="contact"  placeholder="Contact">
-            </div>
-            <div class="flex flex-col items-start gap-2">
-                <label for="">National Identification Number</label>
-                <input type="text" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="National ID Number">
-            </div>
-  
-            <div class="flex flex-col items-start gap-2">
-                <label for="county">County</label>
-                <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
-                    <option value="">--Select A County--</option>
-                </select>                
-            </div>
-            <div class="flex flex-col items-start  gap-2">
-              <label for="residentialarea">Residential Area</label>
-              <!-- <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
-                  <option value="">--Select An Area--</option>
-              </select>                 -->
-              <input type="text" class="py-2 px-12 rounded bg-inputbg" name="residentialarea"  placeholder="Residential Area">
-          </div>
-          <div class="flex flex-col items-start  gap-2">
-            <label for="password">Username</label>
-        <input type="text" class="py-2 px-12 rounded bg-inputbg" name="username"  placeholder="Username">
-        </div>
-            <div class="flex flex-col items-start gap-2">
-                <label for="password">Password</label>
-            <input type="password" class="py-2 px-12 rounded bg-inputbg" name="password"  placeholder="Password">
-            </div>
-            <div class="flex flex-col items-start gap-2">
-              <label for="passwordconfirm">Confirm Password</label>
-          <input type="password" class="py-2 px-12 rounded bg-inputbg" name="passwordconfirm"  placeholder="Confirm Password">
-          </div>
-                <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">ADD DOCTORS</button>
+    <div class="container grid place-items-center my-5">
+       <fieldset>
 
-            </form>
+            <div class="bg-white py-10 px-24 my-5">
+                <form action="" method="post">
+                  <legend class="border-bottom mb-4"><h3 class="">{{title}}</h3></legend>
+                  {{form.hidden_tag()}}
+                    <div class="flex flex-col items-start gap-2">
+                      <!-- <label for="firstname">First Name</label> -->
+                      {{form.firstname.label()}} 
+                  {{form.firstname(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your firstname')}}  
+                   
+                      <!-- <input type="text" class="py-2 px-12 rounded bg-inputbg" name="firstname"  placeholder="First Name"> -->
+                  </div>
+                  {%if form.firstname.errors%}
+                  {%for error in form.firstname.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    {{form.lastname.label()}} 
+                  {{form.lastname(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your lastname')}}  
+                   
+                      <!-- <label for="lastname">Last Name</label>
+                      <input type="text" class="py-2 px-12 rounded bg-inputbg" name="lastname"  placeholder="Last Name">
+                  </div> -->
+                  {%if form.lastname.errors%}
+                  {%for error in form.lastname.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2 ">
+                     
+                    {{form.email.label()}} 
+                    {{form.email(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
+                   
+                      <!-- <label for="email">Email Address</label>
+                      <input type="email" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="Email Address"> -->
+                  </div>
+                  {%if form.email.errors%}
+                    {%for error in form.email.errors%}
+                    <span class="text-red-500">{{error}}</span>
+                    {%endfor%}
+                    {%endif%}
+                  <div class="flex flex-col items-start gap-2 ">
+                    <!-- <label for="gender">Gender</label> -->
+                    {{form.gender.label()}} 
+                   
+                    <div class="flex gap-2 ">
+                      {{form.gender(class='py-2 px-8 rounded bg-inputbg')}}  
+        
+                      <!-- <input type="radio" name="gender" value="male"> Male 
+                      <input type="radio" name="gender" value="female"> Female         -->
+                    </div>
+                  </div>
+                  {%if form.gender.errors%}
+                  {%for error in form.gender.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    <!-- <label for="DoB">Date of Birth</label> -->
+                    {{form.DoB.label()}} 
+                  {{form.DoB(class='py-2 px-8 rounded bg-inputbg')}}  
+                   
+                    <!-- <input type="date" class="py-2 px-12 rounded bg-inputbg" name="DoB" > -->
+                </div>
+                {%if form.DoB.errors%}
+                {%for error in form.DoB.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%} 
+                  <div class="flex flex-col items-start  gap-2">
+                      <!-- <label for="contact">Contact</label> -->
+                      {{form.contact.label()}} 
+                  {{form.contact(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your phone number')}}  
+                   
+                      <!-- <input type="text" class="py-2 px-12 rounded bg-inputbg" name="contact"  placeholder="Contact"> -->
+                  </div>
+                  {%if form.contact.errors%}
+                  {%for error in form.contact.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%} 
+                  <!-- <div class="flex flex-col items-start gap-2">
+                      <label for="">National Identification Number</label>
+                      <input type="text" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="National ID Number">
+                  </div> -->
+        
+                  <div class="flex flex-col items-start gap-2">
+                      <!-- <label for="county">County</label>
+                      <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
+                          <option value="">--Select A County--</option>
+                      </select>                 -->
+                      {{form.county.label()}} 
+                      {{form.county(class='py-2 px-8 rounded bg-inputbg')}}  
+                      
+                  </div>
+                  {%if form.county.errors%}
+                  {%for error in form.county.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    {{form.area.label()}} 
+                    {{form.area(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your Residential Area')}}  
+                    
+                    <!-- <label for="residentialarea">Residential Area</label> -->
+                    <!-- <select name="county" class="py-2 px-12 rounded bg-inputbg" id="">
+                        <option value="">--Select An Area--</option>
+                    </select>                 -->
+                    <!-- <input type="text" class="py-2 px-12 rounded bg-inputbg" name="residentialarea"  placeholder="Residential Area"> -->
+                </div>
+                {%if form.area.errors%}
+                {%for error in form.area.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%}
+                <div class="flex flex-col items-start  gap-2">
+                  <!-- <label for="password">Username</label> -->
+                  {{form.username.label()}} 
+                  {{form.username(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your username')}}  
+                    
+              <!-- <input type="text" class="py-2 px-12 rounded bg-inputbg" name="username"  placeholder="Username"> -->
+              </div>
+              {%if form.username.errors%}
+              {%for error in form.username.errors%}
+              <span class="text-red-500">{{error}}</span>
+              {%endfor%}
+              {%endif%} 
+
+
+              <div class="flex flex-col items-start  gap-2 ">
+                     
+                {{form.specialty.label()}} 
+                {{form.specialty(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
+               
+                  <!-- <label for="email">Email Address</label>
+                  <input type="email" class="py-2 px-12 rounded bg-inputbg" name="email"  placeholder="Email Address"> -->
+              </div>
+              {%if form.specialty.errors%}
+                {%for error in form.specialty.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%}
+
+
+
+                  <div class="flex flex-col items-start gap-2">
+                      <!-- <label for="password">Password</label> -->
+                  <!-- <input type="password" class="py-2 px-12 rounded bg-inputbg" name="password"  placeholder="Password"> -->
+                  {{form.password.label()}} 
+                  {{form.password(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your password')}}  
+                    
+                </div>
+                {%if form.password.errors%}
+                {%for error in form.password.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%} 
+                  <div class="flex flex-col items-start gap-2">
+                    <!-- <label for="passwordconfirm">Confirm Password</label> -->
+                    {{form.confirm_password.label()}} 
+                  {{form.confirm_password(class='py-2 px-8 rounded bg-inputbg',placeholder='Confirm your password')}}  
+                
+                <!-- <input type="password" class="py-2 px-12 rounded bg-inputbg" name="passwordconfirm"  placeholder="Confirm Password"> -->
+                </div>
+                {%if form.confirm_password.errors%}
+                      {%for error in form.confirm_password.errors%}
+                      <span class="text-red-500">{{error}}</span>
+                      {%endfor%}
+                      {%endif%} 
+                  </div>
+                  <div class="flex flex-col items-center gap-2 mt-5">
+                    {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
+                    <!-- <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">REGISTER</button> -->
+                  </div>
+                  {% with messages= get_flashed_messages(with_categories=true) %}
+                  {%if messages %}
+                  {%for category, msg in messages %}
+                    {%if category=='warning'%}
+                    <p class="text-orange-500">{{msg}}</p>
+                    {% elif category=='success' %}
+                    <p class="text-green-500">{{msg}}</p>
+                    {% elif category=='error' %}
+                    <p class="text-red-500">{{msg}}</p>
+                    {% else %}
+                    <p class="text-blue-500">{{msg}}</p>
+                  {%endif%}
+                  {%endfor%}
+                  {%endif%}
+              {%endwith%}
+                </form>
+            </div>
         </div>
+    </div>
+    {% endblock content %}

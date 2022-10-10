@@ -1,9 +1,20 @@
 from datetime import datetime
 from app import db,login_manager
+from flask import session
 from flask_login import UserMixin
 @login_manager.user_loader
-def load_user(patient_id):
-    return Patients.query.get(int(patient_id))
+def load_user(patient_id): 
+    if "account_type" in session:
+        if session["account_type"] == "Admin":
+            return Admins.query.get(int(patient_id))
+        elif session["account_type"] == "Patient":
+            return Patients.query.get(int(patient_id))
+        elif session["account_type"] == "Doctor":
+            return Doctors.query.get(int(patient_id))
+        else:
+            return None
+    else:
+        return None
 class Patients(db.Model, UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
@@ -17,16 +28,7 @@ class Patients(db.Model, UserMixin):
     predpatientid=db.relationship('Predictions', backref='predictedpat',lazy=True)
     registeredpatientid=db.relationship('PatientCredentials', backref='registeredpat',lazy=True)
     patientmsgid=db.relationship('PatientMessages', backref='recipientpat',lazy=True)
-    # def __init__(self,id,fname,lname,email,gender,dateofbirth,contact,county,area):
-    #     self.id=id
-    #     self.fname=fname
-    #     self.lname=lname
-    #     self.email=email
-    #     self.gender=gender
-    #     self.dateofbirth=dateofbirth
-    #     self.contact=contact
-    #     self.county=county
-    #     self.area=area
+
 class Admins(db.Model,UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
@@ -35,14 +37,10 @@ class Admins(db.Model,UserMixin):
     gender=db.Column("gender",db.String(20),nullable=False)
     dateofbirth=db.Column("DoB",db.String(20),nullable=False)
     contact=db.Column("contact",db.String(20),nullable=False)
-    def __init__(self,id,fname,lname,email,gender,dateofbirth,contact):
-        self.id=id
-        self.fname=fname
-        self.lname=lname
-        self.email=email
-        self.gender=gender
-        self.dateofbirth=dateofbirth
-        self.contact=contact
+    county=db.Column("county",db.String(20),nullable=False)
+    area=db.Column("Region",db.String(20),nullable=False)
+    registeredadminid=db.relationship('AdminCredentials', backref='registeredadmin',lazy=True)
+
 class Doctors(db.Model,UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)
     fname=db.Column("firstname",db.String(100),nullable=False)
@@ -71,10 +69,7 @@ class AdminCredentials(db.Model):
     status=db.Column(db.String(20),nullable=False,default="Activated")
     adminregistered=db.Column(db.Integer,db.ForeignKey('admins.id'),nullable=False)
     role=db.Column("role",db.String(20),nullable=False,default="General Admin")
-    def __init__(self,adminid,uname,password):
-        self.id=adminid
-        self.uname=uname
-        self.password=password
+
 class DoctorCredentials(db.Model):
     doctorid=db.Column("id",db.Integer,primary_key=True)
     uname=db.Column("username",db.String(20),unique=True, nullable=False)
@@ -84,10 +79,6 @@ class DoctorCredentials(db.Model):
     status=db.Column(db.String(20),nullable=False,default="Activated")
     doctorregistered=db.Column(db.Integer,db.ForeignKey('doctors.id'),nullable=False)
 
-    def __init__(self,doctorid,uname,password):
-        self.id=doctorid
-        self.uname=uname
-        self.password=password
 class Predictions(db.Model):
     id=db.Column("id",db.Integer,primary_key=True)
     glucose=db.Column("glucose",db.Float,nullable=False)
@@ -98,6 +89,7 @@ class Predictions(db.Model):
     outcome=db.Column("outcome",db.Integer,nullable=False)
     date_predicted=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     patientpred=db.Column(db.Integer,db.ForeignKey('patients.id'),nullable=False)
+
 class PatientMessages(db.Model):
     id=db.Column("id",db.Integer,primary_key=True)
     title=db.Column("title",db.String(50), nullable=False)

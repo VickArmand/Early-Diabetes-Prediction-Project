@@ -15,7 +15,7 @@ nav{
 .brand-img{
     width: 30px;
     height: 30px;
-    background: url('../static/istockphoto-877511576-612x612.jpg');
+    background: url('../images/istockphoto-877511576-612x612.jpg');
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -48,7 +48,4 @@ nav{
     border-top-right-radius: 50%;
     border-bottom-left-radius: 50%;
     z-index: -1;
-}
-input[type='range']{
-
 }

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,session
 import numpy as np
 import xgboost as xgb
 import os
@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+session= session
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///diabetespred.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False

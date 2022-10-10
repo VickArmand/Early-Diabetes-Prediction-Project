@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link rel="stylesheet" href="../../static/style.css">
+ <link rel="stylesheet" href="{{url_for('static',filename='/css/style.css')}}">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -35,7 +35,8 @@
         <form action="" method="post">
           {{form.hidden_tag()}}
           <div class="flex flex-col items-center gap-2">
-            <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
+            <img src="{{url_for('static',filename='/images/new-patient-icon-png.png') }}" style="width:150px;height:150px;border-radius:50%;" alt="">
+
             <h3 class="">{{title}}</h3>
           </div>
           <div class="flex flex-col gap-2 items-start">
@@ -108,7 +109,7 @@
           <div class="flex flex-col items-start  gap-2">
               <!-- <label for="contact">Contact</label> -->
               {{form.contact.label()}} 
-          {{form.contact(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your username')}}  
+          {{form.contact(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your phone number')}}  
            
               <!-- <input type="text" class="py-2 px-12 rounded bg-inputbg" name="contact"  placeholder="Contact"> -->
           </div>
@@ -201,6 +202,8 @@
             <p class="text-orange-500">{{msg}}</p>
             {% elif category=='success' %}
             <p class="text-green-500">{{msg}}</p>
+            {% elif category=='error' %}
+            <p class="text-red-500">{{msg}}</p>
             {% else %}
             <p class="text-blue-500">{{msg}}</p>
           {%endif%}

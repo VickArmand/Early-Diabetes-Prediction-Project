@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='/css/style.css')}}">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -27,8 +27,8 @@
     <ul class="flex gap-2 items-center justify-end">
       {%if current_user.is_authenticated%}
       
-      <img src="../../static/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg" style="width:50px;" alt="">
-        <li class="list-none"> <a href="/register">{{current_user.username}}</a></li>
+      <img src="{{url_for('static',filename='/images/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg')}}" style="width:50px;" alt="">
+        <li class="list-none"> <a href="/register">{{current_user.fname +" "+ current_user.lname}}</a></li>
         <li class="list-none"><a href="{{url_for('logout')}}" class="bg-blue-500 rounded px-4 py-2 text-white">Logout</a></li>
         {%else%}
         <li class="list-none"> <a class="bg-blue-500 rounded px-4 py-2 text-white" href="{{url_for('login')}}">Login</a></li>

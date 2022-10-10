@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link rel="stylesheet" href="../../static/style.css">
+ <link rel="stylesheet" href="{{url_for('static',filename='/css/style.css')}}">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,10 +32,10 @@
   </nav>  
 <div class="container grid place-items-center h-screen w-screen">
     <div class="bg-white py-20 px-20">
-       
       <form action="" method="post" class="flex flex-col justify-between items-center gap-2">
-          <img src="../../static/151-1518759_ambulance-doctor-doctor-clipart-black-and-white-png.png" style="width:150px;height:150px;border-radius:50%;" alt="">
-            <div class="flex justify-between items-center gap-2">
+        <img src="{{url_for('static',filename='/images/new-patient-icon-png.png') }}" style="width:150px;height:150px;border-radius:50%;" alt="">
+        <h3 class="">{{title}}</h3>
+        <div class="flex justify-between items-center gap-2">
               {{form.hidden_tag()}} 
               {{form.email.label()}} 
               {{form.email(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
@@ -71,6 +71,8 @@
               <p class="text-orange-500">{{msg}}</p>
               {% elif category=='success' %}
               <p class="text-green-500">{{msg}}</p>
+              {% elif category=='error' %}
+              <p class="text-red-500">{{msg}}</p>
               {% else %}
               <p class="text-blue-500">{{msg}}</p>
             {%endif%}
