@@ -57,6 +57,7 @@ def logout():
     flash('You have been logged out!','success')
     return redirect(url_for("login"))
 
+
 @app.route("/register",methods=["POST","GET"])
 # Patient Registration code
 def register():
@@ -122,18 +123,18 @@ def changepwd():
                         flash('Incorrect password','error') 
             return render_template('/patients/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
-                flash('Access Denied', 'error')
-                abort(403)
+            flash('Access Denied', 'error')
+            abort(403)
     else:
-                flash('Access Denied', 'error')
-                abort(403)
+        flash('Access Denied', 'error')
+        abort(403)
 @app.route("/editprofile",methods=["POST","GET"])
 @login_required
 def editprofile():
     if "account_type" in session:
         if session["account_type"] == "Patient":
             form=UpdateForm()
-            user=PatientCredentials.query.filter_by(patientregistered=current_user.id)
+            user=PatientCredentials.query.filter_by(patientregistered=current_user.id).first()
             if request.method=='GET':
                 form.contact.data=user.registeredpat.contact
                 form.username.data=user.uname
@@ -202,6 +203,8 @@ def adminlogout():
     logout_user()
     if "account_type" in session:
         session.pop('account_type',None)
+    if "role" in session:
+        session.pop('role',None)
     flash('You have been logged out!','success')
     return redirect(url_for("adminlogin"))
 @app.route("/admins/dashboard")
@@ -393,7 +396,7 @@ def admineditadmin(user_id):
             if request.method=='GET':
                 form.firstname.data=user.registeredadmin.fname
                 form.lastname.data=user.registeredadmin.lname
-                form.area.data=user.registeredadmin.county
+                form.area.data=user.registeredadmin.area
                 form.gender.data=user.registeredadmin.gender
                 form.county.data=user.registeredadmin.county
                 form.DoB.data=datetime.strptime(str(user.registeredadmin.dateofbirth),'%Y-%m-%d %H:%M:%S')
@@ -403,7 +406,7 @@ def admineditadmin(user_id):
                 if form.validate_on_submit:
                     user.registeredadmin.fname=form.firstname.data
                     user.registeredadmin.lname=form.lastname.data
-                    user.registeredadmin.county=form.area.data
+                    user.registeredadmin.area=form.area.data
                     user.registeredadmin.gender=form.gender.data
                     user.registeredadmin.county=form.county.data
                     user.registeredadmin.dateofbirth=form.DoB.data
@@ -428,7 +431,7 @@ def admineditdoctor(user_id):
             if request.method=='GET':
                 form.firstname.data=user.registereddoc.fname
                 form.lastname.data=user.registereddoc.lname
-                form.area.data=user.registereddoc.county
+                form.area.data=user.registereddoc.area
                 form.gender.data=user.registereddoc.gender
                 form.county.data=user.registereddoc.county
                 form.DoB.data=datetime.strptime(str(user.registereddoc.dateofbirth),'%Y-%m-%d %H:%M:%S')
@@ -438,7 +441,7 @@ def admineditdoctor(user_id):
                 if form.validate_on_submit:
                     user.registereddoc.fname=form.firstname.data
                     user.registereddoc.lname=form.lastname.data
-                    user.registereddoc.county=form.area.data
+                    user.registereddoc.area=form.area.data
                     user.registereddoc.gender=form.gender.data
                     user.registereddoc.county=form.county.data
                     user.registereddoc.dateofbirth=form.DoB.data
@@ -463,22 +466,21 @@ def admineditpatient(user_id):
             if request.method=='GET':
                 form.firstname.data=user.registeredpat.fname
                 form.lastname.data=user.registeredpat.lname
-                form.area.data=user.registeredpat.county
+                form.area.data=user.registeredpat.area
                 form.gender.data=user.registeredpat.gender
                 form.county.data=user.registeredpat.county
                 form.DoB.data=datetime.strptime(str(user.registeredpat.dateofbirth),'%Y-%m-%d %H:%M:%S')
                 form.status.data=user.status
-                form.specialty.data=user.specialty
+                
             if request.method=='POST':
                 if form.validate_on_submit:
                     user.registeredpat.fname=form.firstname.data
                     user.registeredpat.lname=form.lastname.data
-                    user.registeredpat.county=form.area.data
+                    user.registeredpat.area=form.area.data
                     user.registeredpat.gender=form.gender.data
                     user.registeredpat.county=form.county.data
                     user.registeredpat.dateofbirth=form.DoB.data
                     user.status=form.status.data
-                    user.specialty=form.specialty.data
                     db.session.commit()
                     flash('Doctors Details updated successfully','success')
             return render_template('/admins/patientsedit.html',data=user,form=form, title="EDIT PATIENT'S DETAILS")
@@ -618,6 +620,8 @@ def doctorlogout():
     logout_user()
     if "account_type" in session:
         session.pop('account_type',None)
+    if "specialty" in session:
+        session.pop('specialty',None)
     flash('You have been logged out!','success')
     return redirect(url_for("doctorlogin"))
 @app.route("/doctors/dashboard")
@@ -750,7 +754,7 @@ def doctorchangepwd():
                         flash('Password updated successfully','success') 
                     else:
                         flash('Incorrect password','error') 
-            return render_template('/admins/changepassword.html',form=form,title='CHANGE PASSWORD')
+            return render_template('/doctors/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -763,16 +767,16 @@ def doctoreditprofile():
     if "account_type" in session and "specialty" in session:
         if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
             form=DoctorUpdateForm()
-            user=DoctorCredentials.query.filter_by(doctorregistered=current_user.id)
+            user=DoctorCredentials.query.filter_by(doctorregistered=current_user.id).first()
             if request.method=='GET':
-                form.contact.data=user.registeredpat.contact
+                form.contact.data=user.registereddoc.contact
                 form.username.data=user.uname
-                form.email.data=user.registeredpat.email
+                form.email.data=user.registereddoc.email
             if request.method=='POST':
                 if form.validate_on_submit:
-                    user.registeredpat.contact=form.contact.data
+                    user.registereddoc.contact=form.contact.data
                     user.uname=form.username.data
-                    user.registeredpat.email=form.email.data
+                    user.registereddoc.email=form.email.data
                     db.session.commit()
                     flash('Details updated successfully','success')    
             return render_template('/doctors/editprofile.html',form=form,title='EDIT YOUR PROFILE')

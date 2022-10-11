@@ -25,17 +25,6 @@
                   <span class="text-red-500">{{error}}</span>
                   {%endfor%}
                   {%endif%}
-                  <div class="flex flex-col items-start  gap-2 ">
-                     
-                    {{form.email.label()}} 
-                    {{form.email(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
-
-                  </div>
-                  {%if form.email.errors%}
-                    {%for error in form.email.errors%}
-                    <span class="text-red-500">{{error}}</span>
-                    {%endfor%}
-                    {%endif%}
                   <div class="flex flex-col items-start gap-2 ">
                     {{form.gender.label()}} 
                    
@@ -57,15 +46,6 @@
                 <span class="text-red-500">{{error}}</span>
                 {%endfor%}
                 {%endif%} 
-                  <div class="flex flex-col items-start  gap-2">
-                      {{form.contact.label()}} 
-                  {{form.contact(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your phone number')}}  
-                                     </div>
-                  {%if form.contact.errors%}
-                  {%for error in form.contact.errors%}
-                  <span class="text-red-500">{{error}}</span>
-                  {%endfor%}
-                  {%endif%} 
                   <div class="flex flex-col items-start gap-2">
                       {{form.county.label()}} 
                       {{form.county(class='py-2 px-8 rounded bg-inputbg')}}  
@@ -86,16 +66,6 @@
                 <span class="text-red-500">{{error}}</span>
                 {%endfor%}
                 {%endif%}
-                <div class="flex flex-col items-start  gap-2">
-                  {{form.username.label()}} 
-                  {{form.username(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your username')}}  
-                    
-              </div>
-              {%if form.username.errors%}
-              {%for error in form.username.errors%}
-              <span class="text-red-500">{{error}}</span>
-              {%endfor%}
-              {%endif%} 
                   <div class="flex flex-col items-center gap-2 mt-5">
                     {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
                   </div>
