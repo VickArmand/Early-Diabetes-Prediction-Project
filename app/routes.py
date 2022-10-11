@@ -201,7 +201,7 @@ def admindashboard():
 def manageadmins():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/manageadmins.html', data=Admins.query.all())
+            return render_template('/admins/manageadmins.html', data=AdminCredentials.query.all())
         else:
                     flash('Access Denied', 'error')
                     return redirect(url_for('adminlogin'))
@@ -214,7 +214,7 @@ def manageadmins():
 def managepatients():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/managepatients.html', data=Patients.query.all())
+            return render_template('/admins/managepatients.html', data=PatientCredentials.query.all())
         else:
                     flash('Access Denied', 'error')
                     return redirect(url_for('adminlogin'))
@@ -226,7 +226,7 @@ def managepatients():
 def managedoctors():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/managedoctors.html', data=Doctors.query.all())
+            return render_template('/admins/managedoctors.html', data=DoctorCredentials.query.all())
         else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('adminlogin'))
@@ -353,7 +353,7 @@ def admineditadmin(user_id):
                 form.area.data=user.registeredadmin.county
                 form.gender.data=user.registeredadmin.gender
                 form.county.data=user.registeredadmin.county
-                form.DoB.data=datetime.strptime(user.registeredadmin.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.DoB.data=datetime.strptime(str(user.registeredadmin.dateofbirth),'%Y-%m-%d %H:%M:%S')
                 form.status.data=user.status
                 form.role.data=user.role
             if request.method=='POST':
@@ -385,7 +385,7 @@ def admineditdoctor(user_id):
                 form.area.data=user.registereddoc.county
                 form.gender.data=user.registereddoc.gender
                 form.county.data=user.registereddoc.county
-                form.DoB.data=datetime.strptime(user.registereddoc.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.DoB.data=datetime.strptime(str(user.registereddoc.dateofbirth),'%Y-%m-%d %H:%M:%S')
                 form.status.data=user.status
                 form.specialty.data=user.specialty
             if request.method=='POST':
@@ -420,7 +420,7 @@ def admineditpatient(user_id):
                 form.area.data=user.registeredpat.county
                 form.gender.data=user.registeredpat.gender
                 form.county.data=user.registeredpat.county
-                form.DoB.data=datetime.strptime(user.registeredpat.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.DoB.data=datetime.strptime(str(user.registeredpat.dateofbirth),'%Y-%m-%d %H:%M:%S')
                 form.status.data=user.status
                 form.specialty.data=user.specialty
             if request.method=='POST':
@@ -436,6 +436,56 @@ def admineditpatient(user_id):
                     db.session.commit()
                     flash('Doctors Details updated successfully','success')
             return render_template('/admins/patientsedit.html',data=user,form=form, title="EDIT PATIENT'S DETAILS")
+
+
+
+
+@app.route("/admins/doctors/activate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def adminactivatedoctor(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=DoctorCredentials.query.get_or_404(user_id)
+            user.status='Activated'
+            db.session.commit()
+            return redirect(url_for('managedoctors'))
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/admins/patients/activate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def adminactivatepatient(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=PatientCredentials.query.get_or_404(user_id)
+            user.status='Activated'
+            db.session.commit()
+            return redirect(url_for('managepatients'))
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/admins/activate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def adminactivateadmin(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=AdminCredentials.query.get_or_404(user_id)
+            user.status='Activated'
+            db.session.commit()
+            return redirect(url_for('manageadmins'))
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+
 @app.route("/admins/doctors/deactivate/<int:user_id>",methods=["POST","GET"])
 @login_required
 def admindeactivatedoctor(user_id):
@@ -444,6 +494,7 @@ def admindeactivatedoctor(user_id):
             user=DoctorCredentials.query.get_or_404(user_id)
             user.status='Deactivated'
             db.session.commit()
+            return redirect(url_for('managedoctors'))
         else:
                 flash('Access Denied', 'error')
                 abort(403)
@@ -458,6 +509,7 @@ def admindeactivatepatient(user_id):
             user=PatientCredentials.query.get_or_404(user_id)
             user.status='Deactivated'
             db.session.commit()
+            return redirect(url_for('managepatients'))
         else:
                 flash('Access Denied', 'error')
                 abort(403)
@@ -472,6 +524,7 @@ def admindeactivateadmin(user_id):
             user=AdminCredentials.query.get_or_404(user_id)
             user.status='Deactivated'
             db.session.commit()
+            return redirect(url_for('manageadmins'))
         else:
                 flash('Access Denied', 'error')
                 abort(403)

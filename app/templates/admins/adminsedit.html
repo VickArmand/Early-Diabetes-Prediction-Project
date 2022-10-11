@@ -64,6 +64,17 @@
                 <span class="text-red-500">{{error}}</span>
                 {%endfor%}
                 {%endif%}
+                <div class="flex flex-col items-start  gap-2 ">
+                     
+                  {{form.role.label()}} 
+                  {{form.role(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
+                </div>
+                {%if form.role.errors%}
+                  {%for error in form.role.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+  
             <div class="flex flex-col items-start gap-2 ">
                     {{form.status.label()}} 
                    

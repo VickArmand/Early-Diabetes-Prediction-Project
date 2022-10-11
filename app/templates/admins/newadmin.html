@@ -146,8 +146,6 @@
                 {%endfor%}
                 {%endif%}
 
-
-
                   <div class="flex flex-col items-start gap-2">
                       <!-- <label for="password">Password</label> -->
                   <!-- <input type="password" class="py-2 px-12 rounded bg-inputbg" name="password"  placeholder="Password"> -->
@@ -177,7 +175,6 @@
                     {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
         
                     <!-- <button type="submit" class="bg-blue-500 rounded px-4 py-2 text-white">REGISTER</button> -->
-                    <span>Already have an account? <a href="/login" class="text-blue-500">Login</a></span>
                   </div>
                   {% with messages= get_flashed_messages(with_categories=true) %}
                   {%if messages %}

@@ -16,10 +16,15 @@
           {%if data%}
           {%for item in data%}
           <tr class="bg-white border-b  dark:border-gray-700">
-          <td class="py-2 px-3">{{ item.fname +" "+ item.lname }}</td>
-          <td class="py-2 px-3">{{ item.contact }}</td>
-          <td class="py-2 px-3">{{ item.gender }}</td>
-          <td class="py-2 px-3"><a href=""class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a> <a href=""class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+          <td class="py-2 px-3">{{ item.registeredadmin.fname +" "+ item.registeredadmin.lname }}</td>
+          <td class="py-2 px-3">{{ item.registeredadmin.contact }}</td>
+          <td class="py-2 px-3">{{ item.registeredadmin.gender }}</td>
+          <td class="py-2 px-3"><a href="{{ url_for('admineditadmin',user_id=item.adminregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a>
+             {%if item.status == 'Activated'%}
+            <a href="{{ url_for('admindeactivateadmin',user_id=item.adminregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+            {%else%}
+            <a href="{{ url_for('adminactivateadmin',user_id=item.adminregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">ACTIVATE</a></td>
+            {%endif%}
         </tr>
           {%endfor%}
          {%else%}
