@@ -1,4 +1,4 @@
-from flask import render_template,request,url_for,redirect,session,flash
+from flask import render_template,request,url_for,redirect,session,flash,abort
 import os
 from app import app,xgb,pk,np,db,bcrypt
 from app.models import *
@@ -118,15 +118,15 @@ def changepwd():
     else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('login'))
-@app.route("/editinfo",methods=["POST","GET"])
+@app.route("/editprofile",methods=["POST","GET"])
 @login_required
-def editinfo():
+def editprofile():
     if "account_type" in session:
         if session["account_type"] == "Patient":
             form=UpdateForm()
             if request.method=='POST':
                 pass    
-            return render_template('/patients/editinfo.html',form=form)
+            return render_template('/patients/editprofile.html',form=form)
         else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('login'))
@@ -150,7 +150,7 @@ def monitorprogress():
 # Admin routes
 @app.route("/admins/login",methods=["POST","GET"])
 def adminlogin():
-    form=LoginForm()
+    form=AdminLoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('admindashboard'))
     if request.method=='POST':
@@ -163,6 +163,7 @@ def adminlogin():
                         if bcrypt.check_password_hash(credentials.password,form.password.data):
                             login_user(credentials.registeredadmin,remember=form.remember.data)
                             session['account_type'] ='Admin'
+                            session['role']=credentials.role
                             next_page=request.args.get('next')
                             flash('Sign in success', 'success')
                             return redirect(next_page) if next_page else redirect(url_for('admindashboard'))
@@ -200,7 +201,20 @@ def admindashboard():
 def manageadmins():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/manageadmins.html')
+            return render_template('/admins/manageadmins.html', data=Admins.query.all())
+        else:
+                    flash('Access Denied', 'error')
+                    return redirect(url_for('adminlogin'))
+    else:
+                flash('Access Denied', 'error')
+                return redirect(url_for('adminlogin'))
+
+@app.route("/admins/managepatients")
+@login_required
+def managepatients():
+    if "account_type" in session:
+        if session["account_type"] == "Admin":
+            return render_template('/admins/managepatients.html', data=Patients.query.all())
         else:
                     flash('Access Denied', 'error')
                     return redirect(url_for('adminlogin'))
@@ -212,7 +226,7 @@ def manageadmins():
 def managedoctors():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/managedoctors.html')
+            return render_template('/admins/managedoctors.html', data=Doctors.query.all())
         else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('adminlogin'))
@@ -222,8 +236,8 @@ def managedoctors():
 @app.route("/admins/doctors/new",methods=["POST","GET"])
 @login_required
 def newdoctors():
-    if "account_type" in session:
-        if session["account_type"] == "Admin":
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
             form=DoctorRegistrationForm()
             if request.method=='POST':
                 agediff=datetime.now().year - datetime.strptime(str(form.DoB.data),'%Y-%m-%d').year
@@ -240,7 +254,7 @@ def newdoctors():
                     doctor=Doctors(fname=form.firstname.data,lname=form.lastname.data,email=form.email.data,gender=form.gender.data,county=form.county.data,dateofbirth=form.DoB.data,contact=form.contact.data,area=form.area.data)
                     # db.session.add(doctor)
                     # db.session.commit()
-                    doctorcredentials=DoctorCredentials(uname=form.username.data,password=hashed_password,speciality=form.specialty.data,registereddoc=doctor)
+                    doctorcredentials=DoctorCredentials(uname=form.username.data,password=hashed_password,specialty=form.specialty.data,registereddoc=doctor)
                     db.session.add(doctorcredentials)
                     db.session.commit()
                     # Session message
@@ -259,15 +273,15 @@ def newdoctors():
 @app.route("/admins/new",methods=["POST","GET"])
 @login_required
 def newadmin():
-    if "account_type" in session:
-        if session["account_type"] == "Admin":
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
             form=AdminRegistrationForm()
             if request.method=='POST':
                 # If request type is post and there is no error during form validation
                 agediff=datetime.now().year - datetime.strptime(str(form.DoB.data),'%Y-%m-%d').year
                 if datetime.strptime(str(form.DoB.data),'%Y-%m-%d').year >= datetime.now().year:
                     flash("The date cannot be in the future!",'error')
-                
+                    
                 elif agediff < 10:
                     flash("Age too low for registration.",'error')
 
@@ -287,14 +301,13 @@ def newadmin():
                 else:
                     # If there is an error during validation redirect back to registration page
                     return render_template('/admins/newadmin.html',form=form,title='ADMIN REGISTRATION')
-            else:
-                return render_template('/admins/newadmin.html',form=form,title='ADMIN REGISTRATION')
+            return render_template('/admins/newadmin.html',form=form,title='ADMIN REGISTRATION')
         else:
-                    flash('Access Denied', 'error')
-                    return redirect(url_for('adminlogin'))
+            flash('Access Denied', 'error')
+            abort(403)
     else:
-                flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+        flash('Access Denied', 'error')
+        abort(403)
 @app.route("/admins/changepwd",methods=["POST","GET"])
 @login_required
 def adminchangepwd():
@@ -311,15 +324,15 @@ def adminchangepwd():
     else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('adminlogin'))
-@app.route("/admins/editinfo",methods=["POST","GET"])
+@app.route("/admins/editprofile",methods=["POST","GET"])
 @login_required
-def admineditinfo():
+def admineditprofile():
     if "account_type" in session:
         if session["account_type"] == "Admin":
             form=UpdateForm()
             if request.method=='POST':
                 pass    
-            return render_template('/admins/editinfo.html',form=form)
+            return render_template('/admins/editprofile.html',form=form)
         else:
             flash('Access Denied', 'error')
             return redirect(url_for('adminlogin'))
@@ -327,10 +340,148 @@ def admineditinfo():
                 flash('Access Denied', 'error')
                 return redirect(url_for('adminlogin'))
 
+@app.route("/admins/edit/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admineditadmin(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            form=AdminEditAdmins()
+            user=AdminCredentials.query.get_or_404(user_id)
+            if request.method=='GET':
+                form.firstname.data=user.registeredadmin.fname
+                form.lastname.data=user.registeredadmin.lname
+                form.area.data=user.registeredadmin.county
+                form.gender.data=user.registeredadmin.gender
+                form.county.data=user.registeredadmin.county
+                form.DoB.data=datetime.strptime(user.registeredadmin.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.status.data=user.status
+                form.role.data=user.role
+            if request.method=='POST':
+                if form.validate_on_submit:
+                    user.registeredadmin.fname=form.firstname.data
+                    user.registeredadmin.lname=form.lastname.data
+                    user.registeredadmin.county=form.area.data
+                    user.registeredadmin.gender=form.gender.data
+                    user.registeredadmin.county=form.county.data
+                    user.registeredadmin.dateofbirth=form.DoB.data
+                    user.status=form.status.data
+                    user.role=form.role.data
+                    db.session.commit()
+                    flash('Doctors Details updated successfully','success')
+            return render_template('/admins/adminsedit.html',data=user,form=form,title="EDIT ADMIN'S DETAILS")
+    else:
+         flash('Access Denied','error')
+         abort(403)
+@app.route("/admins/doctors/edit/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admineditdoctor(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            form=AdminEditDoctors()
+            user=DoctorCredentials.query.get_or_404(user_id)
+            if request.method=='GET':
+                form.firstname.data=user.registereddoc.fname
+                form.lastname.data=user.registereddoc.lname
+                form.area.data=user.registereddoc.county
+                form.gender.data=user.registereddoc.gender
+                form.county.data=user.registereddoc.county
+                form.DoB.data=datetime.strptime(user.registereddoc.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.status.data=user.status
+                form.specialty.data=user.specialty
+            if request.method=='POST':
+                if form.validate_on_submit:
+                    user.registereddoc.fname=form.firstname.data
+                    user.registereddoc.lname=form.lastname.data
+                    user.registereddoc.county=form.area.data
+                    user.registereddoc.gender=form.gender.data
+                    user.registereddoc.county=form.county.data
+                    user.registereddoc.dateofbirth=form.DoB.data
+                    user.status=form.status.data
+                    user.specialty=form.specialty.data
+                    db.session.commit()
+                    flash('Doctors Details updated successfully','success')
+            return render_template('/admins/doctorsedit.html',data=user,form=form,title="EDIT DOCTOR'S DETAILS")
+        else:
+            flash('Access Denied', 'error')
+            abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/admins/patients/edit/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admineditpatient(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            form=AdminEditPatients()
+            user=PatientCredentials.query.get_or_404(user_id)
+            if request.method=='GET':
+                form.firstname.data=user.registeredpat.fname
+                form.lastname.data=user.registeredpat.lname
+                form.area.data=user.registeredpat.county
+                form.gender.data=user.registeredpat.gender
+                form.county.data=user.registeredpat.county
+                form.DoB.data=datetime.strptime(user.registeredpat.dateofbirth,'%Y-%m-%d %H:%M:%S')
+                form.status.data=user.status
+                form.specialty.data=user.specialty
+            if request.method=='POST':
+                if form.validate_on_submit:
+                    user.registeredpat.fname=form.firstname.data
+                    user.registeredpat.lname=form.lastname.data
+                    user.registeredpat.county=form.area.data
+                    user.registeredpat.gender=form.gender.data
+                    user.registeredpat.county=form.county.data
+                    user.registeredpat.dateofbirth=form.DoB.data
+                    user.status=form.status.data
+                    user.specialty=form.specialty.data
+                    db.session.commit()
+                    flash('Doctors Details updated successfully','success')
+            return render_template('/admins/patientsedit.html',data=user,form=form, title="EDIT PATIENT'S DETAILS")
+@app.route("/admins/doctors/deactivate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admindeactivatedoctor(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=DoctorCredentials.query.get_or_404(user_id)
+            user.status='Deactivated'
+            db.session.commit()
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/admins/patients/deactivate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admindeactivatepatient(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=PatientCredentials.query.get_or_404(user_id)
+            user.status='Deactivated'
+            db.session.commit()
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/admins/deactivate/<int:user_id>",methods=["POST","GET"])
+@login_required
+def admindeactivateadmin(user_id):
+    if "account_type" in session and "role" in session:
+        if session["account_type"] == "Admin" and session["role"] == "Super Admin":
+            user=AdminCredentials.query.get_or_404(user_id)
+            user.status='Deactivated'
+            db.session.commit()
+        else:
+                flash('Access Denied', 'error')
+                abort(403)
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
 # Doctors routes
 @app.route("/doctors/login",methods=["POST","GET"])
 def doctorlogin():
-    form=LoginForm()
+    form=DoctorLoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('doctordashboard'))
     if request.method=='POST':
@@ -343,6 +494,7 @@ def doctorlogin():
                         if bcrypt.check_password_hash(credentials.password,form.password.data):
                             login_user(credentials.registereddoc,remember=form.remember.data)
                             session['account_type'] ='Doctor'
+                            session['specialty']=credentials.specialty
                             next_page=request.args.get('next')
                             flash('Sign in success', 'success')
                             return redirect(next_page) if next_page else redirect(url_for('doctordashboard'))
@@ -378,43 +530,43 @@ def doctordashboard():
 @app.route("/doctors/predict", methods=['POST','GET'])
 @login_required
 def predict():
-    if "account_type" in session:
-        if session["account_type"] == "Doctor":
-            if request.method=='POST':
-                # Model loading
-                classifier=pk.load(open(modelpathfile,'rb'))
-                # Obtaining features from sliders
-                pregnanciesno=request.form["pregnanciesno"]
-                glucose=request.form["glucoselevels"]
-                height=request.form["height"]
-                weight=request.form["weight"]
-                bmi=float(weight)/(float(height)**2)
-                insulin=request.form["insulinlevels"]
-                Age=request.form["age"]
-                patientid=int(request.form['patientid'])
-                pedigree=request.form["Pedigree"]
-                SkinThickness=request.form["skinthickness"]
-                features=[pregnanciesno,glucose,SkinThickness,insulin,bmi,pedigree,Age]
-                features=[float (x) for x in features]
-                features=np.array(features)
-                features=features.reshape(1,-1)
-                # outcome prediction
-                predictionvalue=classifier.predict(features)
-                patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
-                patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
-                age=datetime.now().year-patientdob.year
-                # Storing predictions in database
-                predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
-                db.session.add(predictionresults)
-                db.session.commit()
-                if predictionvalue==1:
-                    return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
-                if predictionvalue==0:
-                    return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes")
-            else:
-                return render_template('/doctors/predictdisease.html')
-                        # features=[6,148,72,35,0,33.6,50]
-                # bloodpressure=request.form["pressurelevels"]
+    if "account_type" in session and "specialty" in session:
+        if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
+                        if request.method=='POST':
+                            # Model loading
+                            classifier=pk.load(open(modelpathfile,'rb'))
+                            # Obtaining features from sliders
+                            pregnanciesno=request.form["pregnanciesno"]
+                            glucose=request.form["glucoselevels"]
+                            height=request.form["height"]
+                            weight=request.form["weight"]
+                            bmi=float(weight)/(float(height)**2)
+                            insulin=request.form["insulinlevels"]
+                            Age=request.form["age"]
+                            patientid=int(request.form['patientid'])
+                            pedigree=request.form["Pedigree"]
+                            SkinThickness=request.form["skinthickness"]
+                            features=[pregnanciesno,glucose,SkinThickness,insulin,bmi,pedigree,Age]
+                            features=[float (x) for x in features]
+                            features=np.array(features)
+                            features=features.reshape(1,-1)
+                            # outcome prediction
+                            predictionvalue=classifier.predict(features)
+                            patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
+                            patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
+                            age=datetime.now().year-patientdob.year
+                            # Storing predictions in database
+                            predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
+                            db.session.add(predictionresults)
+                            db.session.commit()
+                            if predictionvalue==1:
+                                return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
+                            if predictionvalue==0:
+                                return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes")
+                        else:
+                            return render_template('/doctors/predictdisease.html')
+                                    # features=[6,148,72,35,0,33.6,50]
+                            # bloodpressure=request.form["pressurelevels"]
         else:
             flash('Access Denied', 'error')
             return redirect(url_for("doctorlogin"))
@@ -492,18 +644,18 @@ def doctorchangepwd():
     else:
         flash('Access Denied', 'error')
         return redirect(url_for("doctorlogin"))
-@app.route("/doctors/editinfo",methods=["POST","GET"])
+@app.route("/doctors/editprofile",methods=["POST","GET"])
 @login_required
-def doctoreditinfo():
-    if "account_type" in session:
-        if session["account_type"] == "Doctor":
+def doctoreditprofile():
+    if "account_type" in session and "specialty" in session:
+        if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
             form=UpdateForm()
             if request.method=='POST':
                 pass    
-            return render_template('/admins/editinfo.html',form=form)
+            return render_template('/admins/editprofile.html',form=form)
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
     else:
         flash('Access Denied', 'error')
         return redirect(url_for("doctorlogin"))

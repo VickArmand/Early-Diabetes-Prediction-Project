@@ -112,3 +112,12 @@ class ChangePasswordForm(FlaskForm):
     new_password=PasswordField('New Password',validators=[DataRequired(),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     confirm_new_password=PasswordField('Confirm New Password',validators=[DataRequired(),EqualTo('new_password'),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     submit=SubmitField('CHANGE PASSWORD')
+class AdminEditPatients(RegistrationForm):
+    status=SelectField('Status',validators=[DataRequired()], choices=[('Activated','Activated'),('Deactivated','Deactivated')])
+    submit=SubmitField('UPDATE')
+class AdminEditDoctors(DoctorRegistrationForm):
+    status=SelectField('Status',validators=[DataRequired()], choices=[('Activated','Activated'),('Deactivated','Deactivated')])
+    submit=SubmitField('UPDATE')
+class AdminEditAdmins(AdminRegistrationForm):
+    status=SelectField('Status',validators=[DataRequired()], choices=[('Activated','Activated'),('Deactivated','Deactivated')])
+    submit=SubmitField('UPDATE')

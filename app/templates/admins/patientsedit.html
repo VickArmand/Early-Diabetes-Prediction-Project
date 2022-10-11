@@ -1,0 +1,121 @@
+{% extends 'admins/base.html' %}
+{% block content %}
+    <div class="container grid place-items-center my-5">
+       <fieldset>
+
+            <div class="bg-white py-10 px-24 my-5">
+                <form action="" method="post">
+                  <legend class="border-bottom mb-4"><h3 class="">{{title}}</h3></legend>
+                  {{form.hidden_tag()}}
+                    <div class="flex flex-col items-start gap-2">
+                      {{form.firstname.label()}} 
+                  {{form.firstname(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your firstname')}}  
+                                     </div>
+                  {%if form.firstname.errors%}
+                  {%for error in form.firstname.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    {{form.lastname.label()}} 
+                  {{form.lastname(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your lastname')}}  
+
+                  {%if form.lastname.errors%}
+                  {%for error in form.lastname.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2 ">
+                     
+                    {{form.email.label()}} 
+                    {{form.email(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your email address')}} 
+
+                  </div>
+                  {%if form.email.errors%}
+                    {%for error in form.email.errors%}
+                    <span class="text-red-500">{{error}}</span>
+                    {%endfor%}
+                    {%endif%}
+                  <div class="flex flex-col items-start gap-2 ">
+                    {{form.gender.label()}} 
+                   
+                    <div class="flex gap-2 ">
+                      {{form.gender(class='py-2 px-8 rounded bg-inputbg')}}  
+                    </div>
+                  </div>
+                  {%if form.gender.errors%}
+                  {%for error in form.gender.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    {{form.DoB.label()}} 
+                  {{form.DoB(class='py-2 px-8 rounded bg-inputbg')}}  
+                                   </div>
+                {%if form.DoB.errors%}
+                {%for error in form.DoB.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%} 
+                  <div class="flex flex-col items-start  gap-2">
+                      {{form.contact.label()}} 
+                  {{form.contact(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your phone number')}}  
+                                     </div>
+                  {%if form.contact.errors%}
+                  {%for error in form.contact.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%} 
+                  <div class="flex flex-col items-start gap-2">
+                      {{form.county.label()}} 
+                      {{form.county(class='py-2 px-8 rounded bg-inputbg')}}  
+                      
+                  </div>
+                  {%if form.county.errors%}
+                  {%for error in form.county.errors%}
+                  <span class="text-red-500">{{error}}</span>
+                  {%endfor%}
+                  {%endif%}
+                  <div class="flex flex-col items-start  gap-2">
+                    {{form.area.label()}} 
+                    {{form.area(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your Residential Area')}}  
+
+                </div>
+                {%if form.area.errors%}
+                {%for error in form.area.errors%}
+                <span class="text-red-500">{{error}}</span>
+                {%endfor%}
+                {%endif%}
+                <div class="flex flex-col items-start  gap-2">
+                  {{form.username.label()}} 
+                  {{form.username(class='py-2 px-8 rounded bg-inputbg',placeholder='Enter your username')}}  
+                    
+              </div>
+              {%if form.username.errors%}
+              {%for error in form.username.errors%}
+              <span class="text-red-500">{{error}}</span>
+              {%endfor%}
+              {%endif%} 
+                  <div class="flex flex-col items-center gap-2 mt-5">
+                    {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
+                  </div>
+                  {% with messages= get_flashed_messages(with_categories=true) %}
+                  {%if messages %}
+                  {%for category, msg in messages %}
+                    {%if category=='warning'%}
+                    <p class="text-orange-500">{{msg}}</p>
+                    {% elif category=='success' %}
+                    <p class="text-green-500">{{msg}}</p>
+                    {% elif category=='error' %}
+                    <p class="text-red-500">{{msg}}</p>
+                    {% else %}
+                    <p class="text-blue-500">{{msg}}</p>
+                  {%endif%}
+                  {%endfor%}
+                  {%endif%}
+              {%endwith%}
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}

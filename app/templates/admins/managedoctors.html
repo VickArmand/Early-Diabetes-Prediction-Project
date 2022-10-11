@@ -13,12 +13,21 @@
        
       </thead>
       <tbody>
-        <tr class="bg-white border-b  dark:border-gray-700">
-         <td class="py-2 px-3">Victor Maina</td>
-         <td class="py-2 px-3">0727617870</td>
-         <td class="py-2 px-3">Male</td>
-         <td class="py-2 px-3"><a href=""class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a> <a href=""class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
-         </tr>
+       
+
+         {%if data%}
+          {%for item in data%}
+          <tr class="bg-white border-b  dark:border-gray-700">
+          <td class="py-2 px-3">{{ item.fname +" "+ item.lname }}</td>
+          <td class="py-2 px-3">{{ item.contact }}</td>
+          <td class="py-2 px-3">{{ item.gender }}</td>
+          <td class="py-2 px-3"><a href=""class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a> <a href=""class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+        </tr>
+          {%endfor%}
+         {%else%}
+         <p>No Records Found</p>
+         {%endif%}
+      
        </tbody>
     </table>
   </div>
