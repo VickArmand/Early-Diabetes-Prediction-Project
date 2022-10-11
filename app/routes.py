@@ -45,6 +45,7 @@ def login():
                         flash('User does not exist', 'error')
                 else:
                     flash('Access Denied', 'error')
+                    abort(403)
             else:
                 flash('User does not exist', 'error')
     return render_template('/patients/login.html',form=form)
@@ -99,10 +100,10 @@ def dashboard():
             return render_template('/patients/dashboard.html')
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
 @app.route("/changepwd",methods=["POST","GET"])
 @login_required
 def changepwd():     
@@ -122,10 +123,10 @@ def changepwd():
             return render_template('/patients/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
 @app.route("/editprofile",methods=["POST","GET"])
 @login_required
 def editprofile():
@@ -147,10 +148,10 @@ def editprofile():
             return render_template('/patients/editprofile.html',form=form,title='EDIT YOUR PROFILE')
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
 @app.route("/monitorprogress")
 @login_required
 def monitorprogress():
@@ -159,10 +160,10 @@ def monitorprogress():
                 return render_template('/patients/patientprogress.html')
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('login'))
+                abort(403)
 
 
 # Admin routes
@@ -192,6 +193,7 @@ def adminlogin():
 
                 else:
                     flash('Access Denied', 'error')
+                    abort(403)
             else:
                     flash('User does not exist', 'error')
     return render_template('/admins/login.html',form=form)
@@ -210,10 +212,10 @@ def admindashboard():
             return render_template('/admins/dashboard.html')
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
 @app.route("/admins/manageadmins")
 @login_required
 def manageadmins():
@@ -224,35 +226,39 @@ def manageadmins():
             return render_template('/admins/manageadmins.html', data=userdata)
         else:
                     flash('Access Denied', 'error')
-                    return redirect(url_for('adminlogin'))
+                    abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
 
 @app.route("/admins/managepatients")
 @login_required
 def managepatients():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/managepatients.html', data=PatientCredentials.query.all())
+            page = request.args.get('page', 1, type=int)
+            userdata=PatientCredentials.query.paginate(page=page, per_page=2)
+            return render_template('/admins/managepatients.html', data=userdata)
         else:
                     flash('Access Denied', 'error')
-                    return redirect(url_for('adminlogin'))
+                    abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
 @app.route("/admins/managedoctors")
 @login_required
 def managedoctors():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/managedoctors.html', data=DoctorCredentials.query.all())
+            page = request.args.get('page', 1, type=int)
+            userdata=DoctorCredentials.query.paginate(page=page, per_page=2)
+            return render_template('/admins/managedoctors.html', data=userdata)
         else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
 @app.route("/admins/doctors/new",methods=["POST","GET"])
 @login_required
 def newdoctors():
@@ -286,10 +292,10 @@ def newdoctors():
             return render_template('/admins/newdoctors.html',form=form,title='DOCTORS REGISTRATION')
         else:
                     flash('Access Denied', 'error')
-                    return redirect(url_for('adminlogin'))
+                    abort(403)
     else:
                 flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+                abort(403)
 @app.route("/admins/new",methods=["POST","GET"])
 @login_required
 def newadmin():
@@ -347,10 +353,10 @@ def adminchangepwd():
             return render_template('/admins/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for('adminlogin'))
+            abort(403)
     else:
             flash('Access Denied', 'error')
-            return redirect(url_for('adminlogin'))
+            abort(403)
 @app.route("/admins/editprofile",methods=["POST","GET"])
 @login_required
 def admineditprofile():
@@ -372,10 +378,10 @@ def admineditprofile():
             return render_template('/admins/editprofile.html',form=form,title='EDIT YOUR PROFILE')
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for('adminlogin'))
+            abort(403)
     else:
-                flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+        flash('Access Denied', 'error')
+        abort(403)
 
 @app.route("/admins/edit/<int:user_id>",methods=["POST","GET"])
 @login_required
@@ -600,8 +606,10 @@ def doctorlogin():
                             flash('Incorrect Email or Password', 'error')
                     else:
                         flash('User does not exist', 'error')
+                        abort(403)
                 else:
                     flash('Access Denied', 'error')
+                    abort(403)
             else:
                 flash('User does not exist', 'error')
     return render_template('/doctors/login.html',form=form)
@@ -620,11 +628,11 @@ def doctordashboard():
             return render_template('/doctors/dashboard.html')
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
 
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/predict", methods=['POST','GET'])
 @login_required
 def predict():
@@ -667,11 +675,11 @@ def predict():
                             # bloodpressure=request.form["pressurelevels"]
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
 
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/train")
 @login_required
 def trainmodel():
@@ -682,11 +690,11 @@ def trainmodel():
             return render_template('/doctors/accuracycomputation.html',metrics=[])
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
 
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/accuracy")
 @login_required
 def computeaccuracy():
@@ -696,11 +704,11 @@ def computeaccuracy():
             return render_template('/doctors/accuracycomputation.html',metrics=mutils.computemetrics(X,Y))
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
 
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/reports")
 @login_required
 def doctorsreports():
@@ -709,11 +717,11 @@ def doctorsreports():
             return render_template('/doctors/reports.html',patients=Patients.query.all())
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
 
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/messages")
 @login_required
 def patientnotifications():
@@ -722,10 +730,10 @@ def patientnotifications():
             return render_template('/doctors/notifications.html')
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/changepwd",methods=["POST","GET"])
 @login_required
 def doctorchangepwd():
@@ -745,10 +753,10 @@ def doctorchangepwd():
             return render_template('/admins/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
             flash('Access Denied', 'error')
-            return redirect(url_for("doctorlogin"))
+            abort(403)
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)
 @app.route("/doctors/editprofile",methods=["POST","GET"])
 @login_required
 def doctoreditprofile():
@@ -773,4 +781,4 @@ def doctoreditprofile():
             abort(403)
     else:
         flash('Access Denied', 'error')
-        return redirect(url_for("doctorlogin"))
+        abort(403)

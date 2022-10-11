@@ -16,7 +16,7 @@
         <tbody>
           {%if data%}
           {%for item in data.items%}
-          <tr class="bg-white border-b  dark:border-gray-700">
+          <tr class="bg-white border-b  dark:border-gray-700 ">
           <td class="py-2 px-3">{{ item.registeredadmin.fname +" "+ item.registeredadmin.lname }}</td>
           <td class="py-2 px-3">{{ item.registeredadmin.contact }}</td>
           <td class="py-2 px-3">{{ item.registeredadmin.gender }}</td>
@@ -34,9 +34,9 @@
          </tbody>
       </table>
       <!-- Pagination Links-->
-<div class="text-right">
+<div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
   <a href="{{ url_for('manageadmins', page=data.prev_num) }}"
-     class="btn btn-outline-dark 
+     class="py-4 px-2 border-r border-white
      {% if data.page == 1 %}disabled{% endif %}">
       &laquo;
   </a>
@@ -46,12 +46,12 @@
 <!-- Check for the active page and set the link to "Active"-->
           {% if data.page == page_num %}
           <a href="{{ url_for('manageadmins', page=page_num) }}"
-             class="btn btn-dark">
+             class="py-4 px-2 border-r border-white">
               {{ page_num }}
           </a>
           {% else %}
           <a href="{{ url_for('manageadmins', page=page_num) }}"
-             class="btn btn-outline-dark">
+             class="py-4 px-2 border-r border-white">
               {{ page_num }}
           </a>
           {% endif %}
@@ -60,16 +60,16 @@
       {% endif %}
   {% endfor %}
   <a href="{{ url_for('manageadmins', page=data.next_num) }}"
-     class="btn btn-outline-dark 
+     class="py-4 px-2
      {% if data.page == data.pages %}disabled{% endif %}">
       &raquo;
   </a>
 </div>
-<p class="text-right mt-3">
+<p class="">
  Showing page {{ data.page }} of {{ data.pages }}
 </p>
-    </div>
-  </div>
+</div>
+</div>
 
       {% endblock content %}
      
