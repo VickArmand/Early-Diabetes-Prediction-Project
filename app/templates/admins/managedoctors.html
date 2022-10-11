@@ -2,6 +2,8 @@
 {% block content %}
 <div class="container grid place-items-center my-5">
   <div class="bg-white py-20 px-20">
+    <a href="{{ url_for('newdoctors')}}"class="bg-blue-500 rounded px-4 py-2 text-white">NEW DOCTOR</a>
+
     <table class="table-auto">
       <thead>
        <tr class="bg-white border-b  dark:border-gray-700">
@@ -25,7 +27,7 @@
         </tr>
           {%endfor%}
          {%else%}
-         <p>No Records Found</p>
+         <p class="px-4 py-2 text-red">No Records Found</p>
          {%endif%}
       
        </tbody>

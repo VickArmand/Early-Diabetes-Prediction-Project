@@ -109,9 +109,17 @@ def changepwd():
     if "account_type" in session:
         if session["account_type"] == "Patient":
             form=ChangePasswordForm()
+            user=PatientCredentials.query.filter_by(patientregistered=current_user.id).first()
             if request.method=='POST':
-                    pass
-            return render_template('/patients/changepassword.html',form=form)
+                if form.validate_on_submit:
+                    if bcrypt.check_password_hash(user.password,form.password.data):
+                        hashed_password=bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+                        user.password=hashed_password
+                        db.session.commit()
+                        flash('Password updated successfully','success')
+                    else:
+                        flash('Incorrect password','error') 
+            return render_template('/patients/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('login'))
@@ -124,9 +132,19 @@ def editprofile():
     if "account_type" in session:
         if session["account_type"] == "Patient":
             form=UpdateForm()
+            user=PatientCredentials.query.filter_by(patientregistered=current_user.id)
+            if request.method=='GET':
+                form.contact.data=user.registeredpat.contact
+                form.username.data=user.uname
+                form.email.data=user.registeredpat.email
             if request.method=='POST':
-                pass    
-            return render_template('/patients/editprofile.html',form=form)
+                if form.validate_on_submit:
+                    user.registeredpat.contact=form.contact.data
+                    user.uname=form.username.data
+                    user.registeredpat.email=form.email.data
+                    db.session.commit()
+                    flash('Details updated successfully','success') 
+            return render_template('/patients/editprofile.html',form=form,title='EDIT YOUR PROFILE')
         else:
                 flash('Access Denied', 'error')
                 return redirect(url_for('login'))
@@ -201,7 +219,9 @@ def admindashboard():
 def manageadmins():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            return render_template('/admins/manageadmins.html', data=AdminCredentials.query.all())
+            page = request.args.get('page', 1, type=int)
+            userdata=AdminCredentials.query.paginate(page=page, per_page=2)
+            return render_template('/admins/manageadmins.html', data=userdata)
         else:
                     flash('Access Denied', 'error')
                     return redirect(url_for('adminlogin'))
@@ -314,25 +334,42 @@ def adminchangepwd():
     if "account_type" in session:
         if session["account_type"] == "Admin":
             form=ChangePasswordForm()
-            # if request.method=='POST':
-            #     pass    
-
-            return render_template('/admins/changepassword.html',form=form)
+            user=AdminCredentials.query.filter_by(adminregistered=current_user.id).first()
+            if request.method=='POST':
+                if form.validate_on_submit:
+                    if bcrypt.check_password_hash(user.password,form.password.data):
+                        hashed_password=bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+                        user.password=hashed_password
+                        db.session.commit()
+                        flash('Password updated successfully','success')    
+                    else:
+                        flash('Incorrect password','error') 
+            return render_template('/admins/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
             flash('Access Denied', 'error')
             return redirect(url_for('adminlogin'))
     else:
-                flash('Access Denied', 'error')
-                return redirect(url_for('adminlogin'))
+            flash('Access Denied', 'error')
+            return redirect(url_for('adminlogin'))
 @app.route("/admins/editprofile",methods=["POST","GET"])
 @login_required
 def admineditprofile():
     if "account_type" in session:
         if session["account_type"] == "Admin":
-            form=UpdateForm()
+            form=AdminUpdateForm()
+            user=AdminCredentials.query.filter_by(adminregistered=current_user.id).first()
+            if request.method=='GET':
+                form.contact.data=user.registeredadmin.contact
+                form.username.data=user.uname
+                form.email.data=user.registeredadmin.email
             if request.method=='POST':
-                pass    
-            return render_template('/admins/editprofile.html',form=form)
+                if form.validate_on_submit:
+                    user.registeredadmin.contact=form.contact.data
+                    user.uname=form.username.data
+                    user.registeredadmin.email=form.email.data
+                    db.session.commit()
+                    flash('Details updated successfully','success')   
+            return render_template('/admins/editprofile.html',form=form,title='EDIT YOUR PROFILE')
         else:
             flash('Access Denied', 'error')
             return redirect(url_for('adminlogin'))
@@ -369,6 +406,9 @@ def admineditadmin(user_id):
                     db.session.commit()
                     flash('Doctors Details updated successfully','success')
             return render_template('/admins/adminsedit.html',data=user,form=form,title="EDIT ADMIN'S DETAILS")
+        else:
+            flash('Access Denied','error')
+            abort(403)
     else:
          flash('Access Denied','error')
          abort(403)
@@ -436,7 +476,12 @@ def admineditpatient(user_id):
                     db.session.commit()
                     flash('Doctors Details updated successfully','success')
             return render_template('/admins/patientsedit.html',data=user,form=form, title="EDIT PATIENT'S DETAILS")
-
+        else:
+            flash('Access Denied','error')
+            abort(403)
+    else:
+         flash('Access Denied','error')
+         abort(403)
 
 
 
@@ -687,10 +732,17 @@ def doctorchangepwd():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
             form=ChangePasswordForm()
-            # if request.method=='POST':
-            #     pass    
-
-            return render_template('/admins/changepassword.html',form=form)
+            user=DoctorCredentials.query.filter_by(doctorregistered=current_user.id).first()
+            if request.method=='POST':
+                if form.validate_on_submit:
+                    if bcrypt.check_password_hash(user.password,form.password.data):
+                        hashed_password=bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+                        user.password=hashed_password
+                        db.session.commit()
+                        flash('Password updated successfully','success') 
+                    else:
+                        flash('Incorrect password','error') 
+            return render_template('/admins/changepassword.html',form=form,title='CHANGE PASSWORD')
         else:
             flash('Access Denied', 'error')
             return redirect(url_for("doctorlogin"))
@@ -702,10 +754,20 @@ def doctorchangepwd():
 def doctoreditprofile():
     if "account_type" in session and "specialty" in session:
         if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
-            form=UpdateForm()
+            form=DoctorUpdateForm()
+            user=DoctorCredentials.query.filter_by(doctorregistered=current_user.id)
+            if request.method=='GET':
+                form.contact.data=user.registeredpat.contact
+                form.username.data=user.uname
+                form.email.data=user.registeredpat.email
             if request.method=='POST':
-                pass    
-            return render_template('/admins/editprofile.html',form=form)
+                if form.validate_on_submit:
+                    user.registeredpat.contact=form.contact.data
+                    user.uname=form.username.data
+                    user.registeredpat.email=form.email.data
+                    db.session.commit()
+                    flash('Details updated successfully','success')    
+            return render_template('/doctors/editprofile.html',form=form,title='EDIT YOUR PROFILE')
         else:
             flash('Access Denied', 'error')
             abort(403)

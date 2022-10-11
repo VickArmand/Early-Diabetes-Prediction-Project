@@ -67,7 +67,6 @@ class AdminRegistrationForm(RegistrationForm):
         ispresentPatient=Admins.query.filter_by(contact=contact.data).first()
         if ispresentPatient :
             raise ValidationError('Phone Number Already exists')
-        
     def validate_username(self,username):
         ispresentPatient=AdminCredentials.query.filter_by(uname=username.data).first()
         if ispresentPatient :
@@ -107,11 +106,53 @@ class UpdateForm(FlaskForm):
     email=StringField('Email',validators=[DataRequired(),Email()])
     contact=StringField('Contact',validators=[DataRequired(),Regexp('^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$')] )
     submit=SubmitField('EDIT DETAILS')
+    def validate_phone(self,contact):
+        ispresentPatient=Patients.query.filter_by(contact=contact.data).first()
+        if ispresentPatient :
+            raise ValidationError('Phone Number Already exists')
+    def validate_username(self,username):
+        ispresentPatient=PatientCredentials.query.filter_by(uname=username.data).first()
+        if ispresentPatient :
+            raise ValidationError('Username already taken')
+    def validate_email(self,email):
+        ispresentPatient=Patients.query.filter_by(email=email.data).first()
+        if ispresentPatient:
+            raise ValidationError('Email Already exists')
+class AdminUpdateForm(UpdateForm):
+    def validate_phone(self,contact):
+        ispresentPatient=Admins.query.filter_by(contact=contact.data).first()
+        if ispresentPatient :
+            raise ValidationError('Phone Number Already exists')
+    def validate_username(self,username):
+        ispresentPatient=AdminCredentials.query.filter_by(uname=username.data).first()
+        if ispresentPatient :
+            raise ValidationError('Username already taken')
+    def validate_email(self,email):
+        ispresentPatient=Admins.query.filter_by(email=email.data).first()
+        if ispresentPatient :
+            raise ValidationError('Email Already exists')
+class DoctorUpdateForm(UpdateForm):
+    def validate_phone(self,contact):
+        ispresentPatient=Doctors.query.filter_by(contact=contact.data).first()
+        if ispresentPatient :
+            raise ValidationError('Phone Number Already exists')
+    def validate_username(self,username):
+        ispresentPatient=DoctorCredentials.query.filter_by(uname=username.data).first()
+        if ispresentPatient :
+            raise ValidationError('Username exists')
+    def validate_email(self,email):
+        ispresentPatient=Doctors.query.filter_by(email=email.data).first()
+        if ispresentPatient :
+            raise ValidationError('Email Already exists')
 class ChangePasswordForm(FlaskForm):
     password=PasswordField('Password',validators=[DataRequired(),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     new_password=PasswordField('New Password',validators=[DataRequired(),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     confirm_new_password=PasswordField('Confirm New Password',validators=[DataRequired(),EqualTo('new_password'),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
-    submit=SubmitField('CHANGE PASSWORD')
+    submit=SubmitField('CHANGE PASSWORD')       
+class AdminPasswordForm(ChangePasswordForm):
+    pass
+class DoctorPasswordForm(ChangePasswordForm):    
+    pass
 class AdminEditPatients(RegistrationForm):
     status=SelectField('Status',validators=[DataRequired()], choices=[('Activated','Activated'),('Deactivated','Deactivated')])
     submit=SubmitField('UPDATE')
