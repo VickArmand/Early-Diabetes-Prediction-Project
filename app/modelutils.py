@@ -30,10 +30,10 @@ class ModelUtils:
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
         classifier=svm.SVC(kernel='linear')
         classifier.fit(X_train,Y_train)
-        trainpreds=classifier.predict(X_train)
         testpreds=classifier.predict(X_test)
         testaccuracy=accuracy_score(Y_test,testpreds)*100
-        f1score= f1_score(Y_test,testpreds, average=None)        
+        # f1score= f1_score(Y_test,testpreds, average=None)
+        mse=mean_squared_error(Y_test,testpreds)        
         modelspath='./app/static/ML Model'
         modelfile= "diabetespredmodelusingxgboost.pkl"
         modelpathfile=os.path.join(modelspath,modelfile)
@@ -45,7 +45,7 @@ class ModelUtils:
         else:
             os.remove(modelpathfile)
             pk.dump(classifier,open(modelpathfile,'wb'))
-        return testaccuracy,f1score
+        return testaccuracy,mse
  
     def computemetrics(X,Y):
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)

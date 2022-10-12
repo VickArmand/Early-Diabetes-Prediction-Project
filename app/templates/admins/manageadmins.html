@@ -14,7 +14,7 @@
          
         </thead>
         <tbody>
-          {%if data%}
+          {%if data.items%}
           {%for item in data.items%}
           <tr class="bg-white border-b  dark:border-gray-700 ">
           <td class="py-2 px-3">{{ item.registeredadmin.fname +" "+ item.registeredadmin.lname }}</td>

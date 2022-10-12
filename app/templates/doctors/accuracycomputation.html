@@ -1,40 +1,73 @@
 {% extends 'doctors/base.html' %}
 {% block content %}
-<div class="container grid place-items-center my-5">    
+<div class="container grid place-items-center ml-5">    
   <div class="shadow-lg rounded-lg overflow-hidden">
+    <div class="bg-white py-5 px-5 mt-4">
+      <div class="">
     <a class="bg-blue-500 rounded px-4 py-2 text-white" href="/doctors/train">TRAIN MODEL</a>
-    <a class="bg-green-500 rounded px-4 py-2 text-white" href="/doctors/accuracy">COMPUTE MODEL METRICS</a>
-
-    <div class="py-3 px-5 bg-gray-50">Bar chart</div>
-    <canvas class="h-64" id="chartBar"></canvas>
+    <a class="bg-green-500 rounded px-4 py-2 text-white" href="/doctors/accuracyreports">COMPUTE MODEL METRICS</a>
   </div>
-   <!-- <p> Algorithm used is: Support Vector Machine
-    It's accuracy is:</p>  -->
-    <div class="flex-col place-items-center py-3 px-5 ml-5 bg-gray-50">
-      {%if metrics %}
-       {%for x in metrics[0]%}
-
-        <p>Logistic Regression Accuracy: {{x['Logistic Regression']}}</p>
-        <p>SVM Accuracy: {{x['SVM']}}</p>
-        <p>Random Forest Accuracy: {{x['Random Forest']}}</p>
-        <p>K-Nearest Neighbours Accuracy: {{x['K-Nearest Neighbours']}}</p>
-
+    {%if trainingresults %}
+    <div class="mt-2">
+    <p> Algorithm used is: Support Vector Machine </p>
+    <p> It's accuracy is: {{ trainingresults[0] }} </p>
+    <p> It's Mean squared error is: {{ trainingresults[1] }} </p>
+    </div>
+    {%endif%}
+    {%if evaluationmetrics %}
+      <table class="table-auto mt-3" id="accuracytable">
+        <h3 class="text-lg text-center font-bold"> Accuracy</h3>
+        <thead>
+          <tr class="bg-white border-b  dark:border-gray-700">
+            <th class="py-1  px-1">Logistic Regression</th>
+            <th class="py-1  px-1">Support Vector Machine</th>
+            <th class="py-1  px-1">Random Forest</th>
+            <th class="py-1  px-1">K-Nearest Neighbours</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%for x in evaluationmetrics[0]%}
+         <tr class="bg-white border-b  dark:border-gray-700">
+          <td class="py-1  px-1">{{x['Logistic Regression']}}</td>
+          <td class="py-1  px-1">{{x['SVM']}}</td>
+          <td class="py-1  px-1">{{x['Random Forest']}}</td>
+          <td class="py-1  px-1">{{x['K-Nearest Neighbours']}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+       {%endif%}
+       {%if evaluationmetrics %}
+       <table class="table-auto mt-3" id="msetable">
+         <h3 class="text-lg text-center font-bold">Mean Squred Error</h3>
+         <thead>
+           <tr class="bg-white border-b  dark:border-gray-700">
+             <th class="py-1  px-1">Logistic Regression</th>
+             <th class="py-1  px-1">Support Vector Machine</th>
+             <th class="py-1  px-1">Random Forest</th>
+             <th class="py-1  px-1">K-Nearest Neighbours</th>
+           </tr>
+         </thead>
+         <tbody>
+         {%for x in evaluationmetrics[1]%}
+          <tr class="bg-white border-b  dark:border-gray-700">
+           <td class="py-1  px-1">{{x['Logistic Regression']}}</td>
+           <td class="py-1  px-1">{{x['SVM']}}</td>
+           <td class="py-1  px-1">{{x['Random Forest']}}</td>
+           <td class="py-1  px-1">{{x['K-Nearest Neighbours']}}</td>
+           </tr>
+         {% endfor %}
+       </tbody>
+     </table>
+     <div class="py-3 px-2 bg-gray-50">Accuracy chart</div>
+     <canvas class="h-28" id="chartBar1"></canvas>
+   </div>
+   <div class="py-3 px-2 bg-gray-50">Mean Squared Error chart</div>
+   <canvas class="h-28" id="chartBar2"></canvas>
+ </div>
+        {%endif%}
        
-
-        {%endfor%}</p>
-        {%for x in metrics[1]%}
-
-        <p>Logistic Regression Mean Squred Error: {{x['Logistic Regression']}}</p>
-        <p>SVM Mean Squred Error: {{x['SVM']}}</p>
-        <p>Random Forest Mean Squred Error: {{x['Random Forest']}}</p>
-        <p>K-Nearest Neighbours Mean Squred Error: {{x['K-Nearest Neighbours']}}</p>
-
-       
-
-        {%endfor%}
-      {%endif%}</p>
-
-     
+      </div>
     </div>
   
 </div>
@@ -42,36 +75,67 @@
 
 <!-- Chart bar -->
 <script>
+  const graphmetricswrapper = document.querySelector('#accuracytable tbody tr');
+  const divchildren=graphmetricswrapper.children;
+  const graphmetricswrapper2 = document.querySelector('#msetable tbody tr');
+  const divchildren2=graphmetricswrapper2.children;
 const labelsBarChart = [
 "Logistic regr",
-"SVM",
+"Support Vector Machine",
 "Random Forest",
-"KNN"
+"K-Nearest Neighbours"
 ];
 
-const dataBarChart = {
+const dataBarChart1 = {
 labels: labelsBarChart,
 datasets: [
 {
-  label: "Accuracy computation",
+  label: "Accuracy Evaluation",
   backgroundColor: "hsl(252, 82.9%, 67.8%)",
   borderColor: "hsl(252, 82.9%, 67.8%)",
   data: [
-
+    divchildren[0].innerText,
+    divchildren[1].innerText,
+    divchildren[2].innerText,
+    divchildren[3].innerText
   ],
 },
 ],
 };
+const dataBarChart2 = {
+  labels: labelsBarChart,
+  datasets: [
+  {
+    label: "Mean Squared Error Evaluation",
+    backgroundColor: "hsl(252, 82.9%, 67.8%)",
+    borderColor: "hsl(252, 82.9%, 67.8%)",
+    data: [
+    divchildren2[0].innerText,
+    divchildren2[1].innerText,
+    divchildren2[2].innerText,
+    divchildren2[3].innerText
+    ],
+  },
+  ],
+  };
 
-const configBarChart = {
+const configBarChart1 = {
 type: "bar",
-data: dataBarChart,
+data: dataBarChart1,
 options: {},
 };
-
-var chartBar = new Chart(
-document.getElementById("chartBar"),
-configBarChart
+const configBarChart2 = {
+  type: "bar",
+  data: dataBarChart2,
+  options: {},
+  };
+var chartBar1 = new Chart(
+document.getElementById("chartBar1"),
+configBarChart1
+);
+var chartBar2 = new Chart(
+document.getElementById("chartBar2"),
+configBarChart2
 );
 </script> 
 

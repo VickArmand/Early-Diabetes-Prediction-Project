@@ -2,6 +2,78 @@
 {% block content %}
 <div class="container grid place-items-center my-5">
     <div class="bg-white py-20 px-20">
+      <table class="table-auto">
+        <thead >
+         <tr class="bg-white border-b  dark:border-gray-700">
+            <th class="py-2 px-3">Glucose</th>
+            <th class="py-2 px-3">Insulin</th>
+            <th class="py-2 px-3">Height</th>
+            <th class="py-2 px-3">Weight</th>
+            <th class="py-2 px-3">BMI</th>
+            <th class="py-2 px-3">Blood Pressure</th>
+            <th class="py-2 px-3">Age</th>
+            <th class="py-2 px-3">Outcome</th>
+
+          </tr>
+         
+        </thead>
+        {%if patients.items%}
+        {% for item in patients.items %}
+        <tbody>
+         <tr class="bg-white border-b dark:border-gray-700">
+          <td class="py-2 px-3">{{ item.glucose }}</td>
+          <td class="py-2 px-3">{{ item.insulin }}</td>
+          <td class="py-2 px-3">{{ item.height }}</td>
+          <td class="py-2 px-3">{{ item.weight }}</td>
+          <td class="py-2 px-3">{{ item.bmi }}</td>
+          <td class="py-2 px-3">{{ item.bloodpressure }}</td>
+          <td class="py-2 px-3">{{ item.age }}</td>
+          {%if item.outcome  == 1%}
+          <td class="py-2 px-3">Diabetic</td>
+          {%else%}
+          <td class="py-2 px-3">Non-Diabetic</td>
+          {%endif%}
+          </tr>
+        </tbody>
+        {% endfor %}
+        {%else%}
+       <p class="px-4 py-2 text-red">No Records Found</p>
+       {%endif%}
+    </table>
+    <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
+      <a href="{{ url_for('monitorprogress', page=patients.prev_num) }}"
+         class="py-4 px-2 border-r border-white
+         {% if patients.page == 1 %}disabled{% endif %}">
+          &laquo;
+      </a>
+    <!-- Loop through the number of pages to display a link for each-->
+      {% for page_num in patients.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% if page_num %}
+    <!-- Check for the active page and set the link to "Active"-->
+              {% if patients.page == page_num %}
+              <a href="{{ url_for('monitorprogress', page=page_num) }}"
+                 class="py-4 px-2 border-r border-white">
+                  {{ page_num }}
+              </a>
+              {% else %}
+              <a href="{{ url_for('monitorprogress', page=page_num) }}"
+                 class="py-4 px-2 border-r border-white">
+                  {{ page_num }}
+              </a>
+              {% endif %}
+          {% else %}
+              ...
+          {% endif %}
+      {% endfor %}
+      <a href="{{ url_for('monitorprogress', page=patients.next_num) }}"
+         class="py-4 px-2
+         {% if patients.page == patients.pages %}disabled{% endif %}">
+          &raquo;
+      </a>
+    </div>
+    <p class="">
+     Showing page {{ patients.page }} of {{ patients.pages }}
+    </p>
     </div>
   </div>
 {% endblock content %}

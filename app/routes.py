@@ -158,7 +158,9 @@ def editprofile():
 def monitorprogress():
     if "account_type" in session:
         if session["account_type"] == "Patient":
-                return render_template('/patients/patientprogress.html')
+            page = request.args.get('page', 1, type=int)
+            patientdata=Predictions.query.filter_by(patientpred=current_user.id).order_by(Predictions.date_predicted.desc()).paginate(page=page, per_page=5)
+            return render_template('/patients/patientprogress.html',patients=patientdata)
         else:
                 flash('Access Denied', 'error')
                 abort(403)
@@ -225,7 +227,7 @@ def manageadmins():
     if "account_type" in session:
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
-            userdata=AdminCredentials.query.paginate(page=page, per_page=2)
+            userdata=AdminCredentials.query.paginate(page=page, per_page=5)
             return render_template('/admins/manageadmins.html', data=userdata)
         else:
                     flash('Access Denied', 'error')
@@ -240,7 +242,7 @@ def managepatients():
     if "account_type" in session:
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
-            userdata=PatientCredentials.query.paginate(page=page, per_page=2)
+            userdata=PatientCredentials.query.paginate(page=page, per_page=5)
             return render_template('/admins/managepatients.html', data=userdata)
         else:
                     flash('Access Denied', 'error')
@@ -254,7 +256,7 @@ def managedoctors():
     if "account_type" in session:
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
-            userdata=DoctorCredentials.query.paginate(page=page, per_page=2)
+            userdata=DoctorCredentials.query.paginate(page=page, per_page=5)
             return render_template('/admins/managedoctors.html', data=userdata)
         else:
                 flash('Access Denied', 'error')
@@ -642,41 +644,42 @@ def doctordashboard():
 def predict():
     if "account_type" in session and "specialty" in session:
         if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
-                        if request.method=='POST':
-                            # Model loading
-                            classifier=pk.load(open(modelpathfile,'rb'))
-                            # Obtaining features from sliders
-                            pregnanciesno=request.form["pregnanciesno"]
-                            glucose=request.form["glucoselevels"]
-                            height=request.form["height"]
-                            weight=request.form["weight"]
-                            bmi=float(weight)/(float(height)**2)
-                            insulin=request.form["insulinlevels"]
-                            Age=request.form["age"]
-                            patientid=int(request.form['patientid'])
-                            pedigree=request.form["Pedigree"]
-                            SkinThickness=request.form["skinthickness"]
-                            features=[pregnanciesno,glucose,SkinThickness,insulin,bmi,pedigree,Age]
-                            features=[float (x) for x in features]
-                            features=np.array(features)
-                            features=features.reshape(1,-1)
-                            # outcome prediction
-                            predictionvalue=classifier.predict(features)
-                            patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
-                            patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
-                            age=datetime.now().year-patientdob.year
-                            # Storing predictions in database
-                            predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
-                            db.session.add(predictionresults)
-                            db.session.commit()
-                            if predictionvalue==1:
-                                return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes")
-                            if predictionvalue==0:
-                                return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes")
-                        else:
-                            return render_template('/doctors/predictdisease.html')
-                                    # features=[6,148,72,35,0,33.6,50]
-                            # bloodpressure=request.form["pressurelevels"]
+                patients=Patients.query.all()
+                if request.method=='POST':
+                    # Model loading
+                    classifier=pk.load(open(modelpathfile,'rb'))
+                    # Obtaining features from sliders
+                    pregnanciesno=request.form["pregnanciesno"]
+                    glucose=request.form["glucoselevels"]
+                    height=request.form["height"]
+                    weight=request.form["weight"]
+                    bmi=float(weight)/(float(height)**2)
+                    insulin=request.form["insulinlevels"]
+                    Age=request.form["age"]
+                    patientid=int(request.form['patientid'])
+                    pedigree=request.form["Pedigree"]
+                    SkinThickness=request.form["skinthickness"]
+                    features=[pregnanciesno,glucose,SkinThickness,insulin,bmi,pedigree,Age]
+                    features=[float (x) for x in features]
+                    features=np.array(features)
+                    features=features.reshape(1,-1)
+                    # outcome prediction
+                    predictionvalue=classifier.predict(features)
+                    patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
+                    patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
+                    age=datetime.now().year-patientdob.year
+                    # Storing predictions in database
+                    predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
+                    db.session.add(predictionresults)
+                    db.session.commit()
+                    if predictionvalue==1:
+                        return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes",patients=patients)
+                    if predictionvalue==0:
+                        return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes",patients=patients)
+                else:
+                    return render_template('/doctors/predictdisease.html',patients=patients)
+                            # features=[6,148,72,35,0,33.6,50]
+                    # bloodpressure=request.form["pressurelevels"]
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -690,8 +693,7 @@ def trainmodel():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
             X,Y=mutils.datapreprocessing(datasetpathfile)
-            mutils.train(X,Y)
-            return render_template('/doctors/accuracycomputation.html',metrics=[])
+            return render_template('/doctors/accuracycomputation.html',trainingresults=mutils.train(X,Y))
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -701,11 +703,24 @@ def trainmodel():
         abort(403)
 @app.route("/doctors/accuracy")
 @login_required
-def computeaccuracy():
+def displayaccuracypage():
+    if "account_type" in session:
+        if session["account_type"] == "Doctor":
+            return render_template('/doctors/accuracycomputation.html')
+        else:
+            flash('Access Denied', 'error')
+            abort(403)
+
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/doctors/accuracyreports")
+@login_required
+def computemetrics():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
             X,Y=mutils.datapreprocessing(datasetpathfile)
-            return render_template('/doctors/accuracycomputation.html',metrics=mutils.computemetrics(X,Y))
+            return render_template('/doctors/accuracycomputation.html',evaluationmetrics=mutils.computemetrics(X,Y))
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -718,7 +733,9 @@ def computeaccuracy():
 def doctorsreports():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
-            return render_template('/doctors/reports.html',patients=Patients.query.all())
+            page = request.args.get('page', 1, type=int)
+            patientdata=Predictions.query.paginate(page=page, per_page=5)
+            return render_template('/doctors/reports.html',patients=patientdata)
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -731,7 +748,9 @@ def doctorsreports():
 def patientnotifications():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
-            return render_template('/doctors/notifications.html')
+            page = request.args.get('page', 1, type=int)
+            patientdata=PatientMessages.query.order_by(PatientMessages.date_posted.desc()).paginate(page=page, per_page=5)
+            return render_template('/doctors/notifications.html',msg=patientdata)
         else:
             flash('Access Denied', 'error')
             abort(403)

@@ -3,7 +3,7 @@
 <div class="container grid place-items-center my-5">
   <div class="bg-white py-20 px-20 flex flex-col gap-3">
     <h3>Welcome back  {{current_user.fname +" "+current_user.lname}} </h3>
-    Current progress:
+    Specialty:{{ session.specialty }}
     <div class="flex-col">
     Patient Details:
     <p>Email: {{current_user.email}}</p>

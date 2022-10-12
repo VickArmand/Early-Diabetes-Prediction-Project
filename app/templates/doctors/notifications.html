@@ -5,23 +5,67 @@
     <table class="table-auto">
           <thead>
             <tr class="bg-white border-b  dark:border-gray-700">
-              <td  class="py-2 px-3">Title</td>
-              <td  class="py-2 px-3">Patient</td>
-              <td  class="py-2 px-3">Status</td>
-              <td  class="py-2 px-3">Timestamp</td>
+              <th  class="py-2 px-3">Title</th>
+              <th  class="py-2 px-3">Patient</th>
+              <th  class="py-2 px-3">Status</th>
+              <th  class="py-2 px-3">Timestamp</th>
             </tr>
             
           </thead>
+          {%if msg.items%}
+          {% for item in msg.items %}
           <tbody>
-            <tr class="bg-white border-b  dark:border-gray-700">
-           
-            <td  class="py-2 px-3">Health Status Notification</td>
-            <td  class="py-2 px-3">Victor Maina</td>
-            <td  class="py-2 px-3">Sent</td>
-            <td  class="py-2 px-3">11:59:00</td>
+           <tr class="bg-white border-b  dark:border-gray-700">
+            <td class="py-2 px-3">{{ item.title }}</td>
+            <td class="py-2 px-3">{{ item.recipientpat.fname +" "+ item.recipientpat.lname }}</td>
+            <td class="py-2 px-3">{{ item.status }}</td>
+            <td class="py-2 px-3">{{ item.date_posted }}</td>
+            {%if item.outcome  == 1%}
+            <td class="py-2 px-3">Diabetic</td>
+            {%else%}
+            <td class="py-2 px-3">Non-Diabetic</td>
+            {%endif%}
             </tr>
           </tbody>
+          {% endfor %}
+          {%else%}
+         <p class="px-4 py-2 text-red">No Records Found</p>
+         {%endif%}
       </table>
+      <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
+        <a href="{{ url_for('doctorsreports', page=msg.prev_num) }}"
+           class="py-4 px-2 border-r border-white
+           {% if msg.page == 1 %}disabled{% endif %}">
+            &laquo;
+        </a>
+      <!-- Loop through the number of pages to display a link for each-->
+        {% for page_num in msg.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+      <!-- Check for the active page and set the link to "Active"-->
+                {% if msg.page == page_num %}
+                <a href="{{ url_for('doctorsreports', page=page_num) }}"
+                   class="py-4 px-2 border-r border-white">
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <a href="{{ url_for('doctorsreports', page=page_num) }}"
+                   class="py-4 px-2 border-r border-white">
+                    {{ page_num }}
+                </a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+        <a href="{{ url_for('doctorsreports', page=msg.next_num) }}"
+           class="py-4 px-2
+           {% if msg.page == msg.pages %}disabled{% endif %}">
+            &raquo;
+        </a>
+      </div>
+      <p class="">
+       Showing page {{ msg.page }} of {{ msg.pages }}
+      </p>
   </div>
  
 </div>
