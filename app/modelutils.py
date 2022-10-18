@@ -20,7 +20,7 @@ class ModelUtils:
         diabetesdata= pd.read_csv(diabetesdataurl)
         diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']] = diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']].replace(0,np.NaN)
         diabetesdata.dropna(inplace=True)
-        X=diabetesdata.drop(['Outcome','BloodPressure'],axis=1)
+        X=diabetesdata.drop(['Outcome','BloodPressure','SkinThickness'],axis=1)
         Y=diabetesdata['Outcome']
         # scaler = StandardScaler()
         # X = scaler.fit_transform(X)

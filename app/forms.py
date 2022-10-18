@@ -5,9 +5,9 @@ from wtforms.validators import DataRequired, Length,Email, EqualTo, ValidationEr
 import phonenumbers
 from datetime import datetime
 class RegistrationForm(FlaskForm):
-    firstname=StringField('First Name',validators=[DataRequired(),Length(min=5, max=20)])
-    lastname=StringField('Last Name',validators=[DataRequired(),Length(min=5, max=20)])
-    username=StringField('Username',validators=[DataRequired(),Length(min=5, max=20)])
+    firstname=StringField('First Name',validators=[DataRequired(),Length(min=3, max=20)])
+    lastname=StringField('Last Name',validators=[DataRequired(),Length(min=3, max=20)])
+    username=StringField('Username',validators=[DataRequired(),Length(min=3, max=30)])
     gender=RadioField('Gender',validators=[DataRequired()], choices=[('Male','Male'),('Female','Female')])
     county=SelectField('County',validators=[DataRequired()], choices=[('Mombasa','Mombasa'),('Kwale','Kwale'),('Kilifi','Kilifi'),('Tana-River','Tana-River'),('Lamu','Lamu'),('Taita Taveta','Taita Taveta'),('Garissa','Garissa'),('Wajir','Wajir'),('Mandera','Mandera'),('Marsabit','Marsabit'),('Isiolo','Isiolo'),('Meru','Meru'),('Tharaka-Nithi','Tharaka-Nithi'),('Embu','Embu'),('Kitui','Kitui'),('Machakos','Machakos'),('Makueni','Makueni'),('Nyandarua','Nyandarua'),('Nyeri','Nyeri'),('Kirinyaga','Kirinyaga'),("Murang'a","Murang'a"),('Kiambu','Kiambu'),('Turkana','Turkana'),('West Pokot','West Pokot'),('Samburu','Samburu'),('Trans-Nzoia','Trans-Nzoia'),('Uasin Gishu','Uasin Gishu'),('Elgeyo-Marakwet','Elgeyo-Marakwet'),('Nandi','Nandi'),('Baringo','Baringo'),('Laikipia','Laikipia'),('Nakuru','Nakuru'),('Narok','Narok'),('Kajiado','Kajiado'),('Kericho','Kericho'),('Bomet','Bomet'),('Kakamega','Kakamega'),('Vihiga','Vihiga'),('Bungoma','Bungoma'),('Busia','Busia'),('Siaya','Siaya'),('Kisumu','Kisumu'),('Homa Bay','Homa Bay'),('Migori','Migori'),('Kisii','Kisii'),('Nyamira','Nyamira'),('Nairobi','Nairobi'),])
     email=StringField('Email',validators=[DataRequired(),Email()])
@@ -102,7 +102,7 @@ class DoctorLoginForm(LoginForm):
         if not ispresentPatient :
             raise ValidationError('User does not exist')
 class UpdateForm(FlaskForm):
-    username=StringField('Username',validators=[DataRequired(),Length(min=5, max=20)])
+    username=StringField('Username',validators=[DataRequired(),Length(min=3, max=20)])
     email=StringField('Email',validators=[DataRequired(),Email()])
     contact=StringField('Contact',validators=[DataRequired(),Regexp('^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$')] )
     submit=SubmitField('EDIT DETAILS')
@@ -162,3 +162,13 @@ class AdminEditDoctors(DoctorRegistrationForm):
 class AdminEditAdmins(AdminRegistrationForm):
     status=SelectField('Status',validators=[DataRequired()], choices=[('Activated','Activated'),('Deactivated','Deactivated')])
     submit=SubmitField('UPDATE')
+class HealthPredictionForm(FlaskForm):
+    patientsselect=SelectField('Select A Patient',validators=[DataRequired()], choices=[('','---Select A Patient---')])
+    pregnancies=SelectField('Number of times pregnant',validators=[DataRequired()], choices=[('None','None'),('Greater than or equal to one and less than ten','Greater than or equal to one and less than ten'),('Greater than or equal to ten','Greater than or equal to ten')])
+    height=SelectField('Height of the Patient',validators=[DataRequired()], choices=[('Less than or equal to 100cm','Less than or equal to 100cm'),('Greater than 100cm and less than 200cm','Greater than 100cm and less than 200cm'),('Greater than or equal to 200cm','Greater than or equal to 200cm')])
+    weight=SelectField('Weight of the Patient',validators=[DataRequired()], choices=[('Less than 70kg','Less than 70kg'),('Greater than or equal to 70kg and less than 84kg','Greater than or equal to 70kg and less than 84kg'),('Greater than or equal to 84kg and less than 112kg','Greater than or equal to 84kg and less than 112kg'),('Greater than 112kg','Greater than 112kg')])
+    glucose=SelectField('Glucose level of the Patient',validators=[DataRequired()], choices=[('Less than or equal to 70','Less than or equal to 70'),('Greater than 70 and less than 180','Greater than 70 and less than 180'),('Greater than 180','Greater than 180')])
+    bloodpressure=SelectField('Blood pressure level of the Patient',validators=[DataRequired()], choices=[('Less than or equal to 80','Less than or equal to 80'),('Greater than 80','Greater than 80')])
+    # insulin=SelectField('Insulin level of the Patient',validators=[DataRequired()], choices=[('Mombasa','Mombasa'),('Kwale','Kwale'),('Kilifi','Kilifi')])
+    # pedigreefn=SelectField('Diabetes pedigree of the patient',validators=[DataRequired()], choices=[('Mombasa','Mombasa'),('Kwale','Kwale'),('Kilifi','Kilifi')])
+    submit=SubmitField('PREDICT')

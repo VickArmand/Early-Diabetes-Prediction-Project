@@ -27,11 +27,12 @@
       <table class="table-auto">
           <thead >
            <tr class="bg-white border-b  dark:border-gray-700">
-              <th class="py-2 px-3">Patient Name</th>
-              <th class="py-2 px-3">Phone Number</th>
-              <th class="py-2 px-3">Gender</th>
-              <th class="py-2 px-3">County</th>
-              <th class="py-2 px-3">Outcome</th>
+              <th class="py-2 px-2">Patient Name</th>
+              <th class="py-2 px-2">Phone Number</th>
+              <th class="py-2 px-2">Gender</th>
+              <th class="py-2 px-2">County</th>
+              <th class="py-2 px-2">Outcome</th>
+              <th class="py-2 px-2">Timestamp</th>
             </tr>
            
           </thead>
@@ -39,15 +40,16 @@
           {% for item in patients.items %}
           <tbody>
            <tr class="bg-white border-b  dark:border-gray-700">
-            <td class="py-2 px-3">{{ item.predictedpat.fname +" "+ item.predictedpat.lname }}</td>
-            <td class="py-2 px-3">{{ item.predictedpat.contact }}</td>
-            <td class="py-2 px-3">{{ item.predictedpat.gender }}</td>
-            <td class="py-2 px-3">{{ item.predictedpat.county }}</td>
+            <td class="py-2 px-2">{{ item.predictedpat.fname +" "+ item.predictedpat.lname }}</td>
+            <td class="py-2 px-2">{{ item.predictedpat.contact }}</td>
+            <td class="py-2 px-2">{{ item.predictedpat.gender }}</td>
+            <td class="py-2 px-2">{{ item.predictedpat.county }}</td>
             {%if item.outcome  == 1%}
-            <td class="py-2 px-3">Diabetic</td>
+            <td class="py-2 px-2">Diabetic</td>
             {%else%}
-            <td class="py-2 px-3">Non-Diabetic</td>
+            <td class="py-2 px-2">Non-Diabetic</td>
             {%endif%}
+            <td class="py-2 px-2">{{ item.date_predicted }}</td>
             </tr>
           </tbody>
           {% endfor %}

@@ -5,7 +5,7 @@ from app.models import *
 from app.forms import * 
 from app.modelutils import ModelUtils as mutils
 from flask_login import login_user,current_user,logout_user,login_required
-
+import africastalking
 # Constructing web routes
 datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
@@ -639,12 +639,15 @@ def doctordashboard():
     else:
         flash('Access Denied', 'error')
         abort(403)
+
 @app.route("/doctors/predict", methods=['POST','GET'])
 @login_required
 def predict():
     if "account_type" in session and "specialty" in session:
         if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
-                patients=Patients.query.all()
+                
+                form=HealthPredictionForm()
+                form.patientsselect.choices=[(patient.id, " ".join([patient.fname, patient.lname])) for patient in Patients.query.all()]
                 if request.method=='POST':
                     # Model loading
                     classifier=pk.load(open(modelpathfile,'rb'))
@@ -665,21 +668,51 @@ def predict():
                     features=features.reshape(1,-1)
                     # outcome prediction
                     predictionvalue=classifier.predict(features)
+                    predictionresults=classifier.predict(features)
                     patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
-                    patientdob=datetime.strptime(patientDoB,'%Y-%m-%d')
+                    patientdob=datetime.strptime(str(patientDoB), '%Y-%m-%d %H:%M:%S')
                     age=datetime.now().year-patientdob.year
                     # Storing predictions in database
                     predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
                     db.session.add(predictionresults)
                     db.session.commit()
                     if predictionvalue==1:
-                        return render_template('/doctors/predictdisease.html',pred="You have higher chances of Diabetes",patients=patients)
+                        pred="You have higher chances of Diabetes"
                     if predictionvalue==0:
-                        return render_template('/doctors/predictdisease.html',pred="You have minimal chances of Diabetes",patients=patients)
+                        pred="You have minimal chances of Diabetes"
+                    africastalking.initialize(username='Victor Maina', api_key='b7f8b249b223c859de2b5bad3d52db5e56da4ca2bdde1a590801b5184ecc2b47')
+                    sms = africastalking.SMS
+                    def on_finish(error, res):
+                        if error is not None:
+                            raise error
+                        print(res)
+                    res = sms.send(message='hello', recipients=['+254793835669'],callback=on_finish)
+                    return render_template('/doctors/predictdisease.html',pred=pred,form=form)
+
                 else:
-                    return render_template('/doctors/predictdisease.html',patients=patients)
+                    return render_template('/doctors/predictdisease.html',form=form)
                             # features=[6,148,72,35,0,33.6,50]
                     # bloodpressure=request.form["pressurelevels"]
+        else:
+            flash('Access Denied', 'error')
+            abort(403)
+
+    else:
+        flash('Access Denied', 'error')
+        abort(403)
+@app.route("/doctors/predict/<int:patient_id>", methods=['POST','GET'])
+@login_required
+def predictwithid(patient_id):
+    if "account_type" in session and "specialty" in session:
+        if session["account_type"] == "Doctor" and session["specialty"] == "Treatment":
+                patients=Patients.query.all()
+                form=HealthPredictionForm()
+                patient=Patients.query.get_or_404(patient_id)
+                form.patientsselect.choices=[(patient.id, " ".join([patient.fname, patient.lname])) for patient in Patients.query.all()]
+                form.patientsselect.default=patient_id
+                form.process()
+                return render_template('/doctors/predictdisease.html',patients=patients,form=form)
+
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -805,3 +838,17 @@ def doctoreditprofile():
     else:
         flash('Access Denied', 'error')
         abort(403)
+@app.route("/doctors/patients")
+@login_required
+def viewpatients():
+    if "account_type" in session:
+        if session["account_type"] == "Doctor":
+            page = request.args.get('page', 1, type=int)
+            userdata=PatientCredentials.query.paginate(page=page, per_page=5)
+            return render_template('/doctors/patients.html', data=userdata)
+        else:
+                    flash('Access Denied', 'error')
+                    abort(403)
+    else:
+                flash('Access Denied', 'error')
+                abort(403)
