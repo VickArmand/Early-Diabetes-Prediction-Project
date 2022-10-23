@@ -81,13 +81,14 @@ class DoctorCredentials(db.Model):
 
 class Predictions(db.Model):
     id=db.Column("id",db.Integer,primary_key=True)
-    # pregnancies=db.Column("pregnancies",db.Float,nullable=False)
+    pregnancies=db.Column("pregnancies",db.Float,nullable=False)
     glucose=db.Column("glucose",db.Float,nullable=False)
     insulin=db.Column("insulin",db.Float,nullable=False)
-    # height=db.Column("height",db.Float,nullable=False)
-    # weight=db.Column("weight",db.Float,nullable=False)
+    height=db.Column("height",db.Float,nullable=False)
+    weight=db.Column("weight",db.Float,nullable=False)
     bmi=db.Column("BMI",db.Float,nullable=False)
     age=db.Column("age",db.Integer,nullable=False)
+    pedigree=db.Column("pedigree",db.Integer,nullable=False)
     # bloodpressure=db.Column("BloodPressure",db.Float,nullable=False)
     outcome=db.Column("outcome",db.Integer,nullable=False)
     date_predicted=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

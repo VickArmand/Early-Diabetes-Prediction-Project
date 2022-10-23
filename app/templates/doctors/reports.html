@@ -4,10 +4,9 @@
   <div class="bg-white py-6 px-12 my-5">
     <form action="">
       <div class="flex justify-between gap-2 items-center">
-        <span>Filter by:</span>
         <div>
           <label for="">Gender</label>
-          <select name="" id="" class="py-2 px-4 rounded bg-inputbg">
+          <select name="" id="genderselection" class="py-2 px-4 rounded bg-inputbg">
             <option value="">---Select a specific gender--</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -15,16 +14,17 @@
         </div>
         <div>
           <label for="">Outcome</label>
-          <select name="" id="" class="py-2 px-4 rounded bg-inputbg">
+          <select name="" id="outcomeselection" class="py-2 px-4 rounded bg-inputbg">
             <option value="">---Select a specific outcome--</option>
-            <option value="Diabetic">Diabetic</option>
-            <option value="Non-diabetic">Non-diabetic</option>
+            <option value="1">Diabetic</option>
+            <option value="0">Non-diabetic</option>
           </select>
         </div>
+        <button type="button" class="bg-blue-500 rounded px-4 py-2 text-white" onclick="filterdetails()">FILTER</button>
       </div>
       </form>
    
-      <table class="table-auto">
+      <table class="table-auto" id='reportstable'>
           <thead >
            <tr class="bg-white border-b  dark:border-gray-700">
               <th class="py-2 px-2">Patient Name</th>
@@ -94,5 +94,5 @@
   </div>
  
 </div>
-
+<script src="{{ url_for('static', filename='js/doctorsreports.js') }}"></script>
 {% endblock content %}

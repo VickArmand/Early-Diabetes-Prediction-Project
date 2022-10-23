@@ -1,11 +1,13 @@
-from flask import render_template,request,url_for,redirect,session,flash,abort
+from flask import render_template,request,url_for,redirect,session,flash,abort,jsonify
 import os
-from app import app,xgb,pk,np,db,bcrypt
+import sqlite3
+import io
+from app import app,pk,np,db,bcrypt
 from app.models import *
 from app.forms import * 
 from app.modelutils import ModelUtils as mutils
 from flask_login import login_user,current_user,logout_user,login_required
-import africastalking
+import random
 # Constructing web routes
 datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
@@ -13,13 +15,57 @@ datasetpathfile=os.path.join(datasetpath,datasetfile)
 modelspath='./app/static/ML Model'
 modelfile= "diabetespredmodelusingxgboost.pkl"
 modelpathfile=os.path.join(modelspath,modelfile)
-
 # Homepage route
 @app.route("/")
 def index():
     return render_template('homepage.html')
+# DB Backup 
+@app.route("/backup")
+def backupdb():
+    conn = sqlite3.connect(os.path.join('./app', 'diabetespred.sqlite3'),check_same_thread=False) 
+    with io.open('backupdatabase_dump.sql', 'w') as p:   
+        # iterdump() function
+        for line in conn.iterdump(): 
+            p.write('%s\n' % line)
+    print(' Backup performed successfully!')
+    print(' Data Saved as backupdatabase_dump.sql')
+    return redirect(url_for('index'))
+    conn.close()
+# DB Restore 
+@app.route("/restore")
+def restore():
+    admin1=Admins(fname='Victor',lname='Mugechi',email='victormaina1962@gmail.com',gender='Male',dateofbirth=datetime.strptime('2005-01-10 00:00:00.000000','%Y-%m-%d %H:%M:%S.%f'),contact='+254727617870',county='Kiambu',area='Thika')
+    admin2=Admins(fname='Jennifer',lname='Carson',email='jencarson@gmail.com',gender='Male',dateofbirth=datetime.strptime('2000-05-11 00:00:00.000000','%Y-%m-%d %H:%M:%S.%f'),contact='+254793835669',county='Mombasa',area='Kwale')
+    admincredential1=AdminCredentials(uname='MugechiVictor',password='$2b$12$WVuU4dgH3jq5OvVp./0r2un03P77LY0wihXvLMLYyWHMz3plk4s4O',status='Activated',registeredadmin=admin1,role='Super Admin')
+    admincredential2=AdminCredentials(uname='jencarson',password='$2b$12$2XGJ.FLIJEJbdS8W5FN6muPMLxW9EiH9Ra/xlqFRZkjxjtpETu9Ti',status='Activated',registeredadmin=admin2,role='General Admin')
+    db.session.add(admincredential1)
+    db.session.add(admincredential2)
+    patient1=Patients(fname='Victor',lname='Mugechi',email='victormaina1962@gmail.com',gender='Male',dateofbirth=datetime.strptime('2005-09-11 00:00:00.000000','%Y-%m-%d %H:%M:%S.%f'),contact='+254727617870',county='Meru',area='Nchiru')
+    patient2=Patients(fname='Noah',lname='Shebib',email='shebibnoah@gmail.com',gender='Male',dateofbirth=datetime.strptime('1998-02-18 00:00:00.000000','%Y-%m-%d %H:%M:%S.%f'),contact='+254727617870',county='Mombasa',area='Kwale')
+    patientcredential1=PatientCredentials(uname='MugechiVictor',password='$2b$12$l/MFo11kJoRUHxABz7ixPONiwRXEiQh3O4Xg/KBcp8Hr1xM4KOQgi',status='Activated',registeredpat=patient1)
+    patientcredential2=PatientCredentials(uname='shebibnoah',password='$2b$12$AP1MD9e0stZDyBhf/YyQJeSa5W8/X68tIN1JSkXufbx.jzRTRQmj2',status='Activated',registeredpat=patient2)
+    db.session.add(patientcredential1)
+    db.session.add(patientcredential2)
+    doctor1=Doctors(fname='Kennedy',lname='Carson',email='kencarson@gmail.com',gender='Male',dateofbirth=datetime.strptime('2010-01-01 00:00:00.000000','%Y-%m-%d %H:%M:%S.%f'),contact='+254793835669',county='Mombasa',area='Kilifi')
+    doctorcredential1=DoctorCredentials(uname='kencarson',password='$2b$12$TnBX15DcY2yRwe9k2TlD0uOHkfTNisl/pEmP5uqRoCjR9MoRwPMWK',specialty='Treatment',status='Activated',registereddoc=doctor1)
+    db.session.add(doctorcredential1)
+    db.session.commit()
+    return redirect(url_for('index'))
+# MSG SEND
+@app.route("/sendmsg")
+def sendmsg():
+        account_sid ='AC67709da7c1191c82b213d6c3bb85af50'
+        auth_token = '5e6b05aafa06ce2099b38408a5aa309a'
+        client = Client(account_sid, auth_token)
 
+        message = client.messages.create(
+                            body="Join Earth's mightiest heroes. Like Kevin Bacon.",
+                            from_='+15017122661',
+                            to='+254793835669'
+                        )
 
+        print(message.sid)
+        return redirect(url_for('index'))
 # Patients routes
 @app.route("/login",methods=["POST","GET"])
 def login():
@@ -48,7 +94,7 @@ def login():
                     abort(403)
             else:
                 flash('User does not exist', 'error')
-    return render_template('/patients/login.html',form=form)
+    return render_template('/patients/login.html',form=form, title='PATIENT\'S SIGN IN')
 @app.route("/logout")
 def logout():
     logout_user()
@@ -90,9 +136,9 @@ def register():
             return redirect(url_for('login'))
         else:
             # If there is an error during validation redirect back to registration page
-            return render_template('/patients/register.html',form=form,title='PATIENT REGISTRATION')
+            return render_template('/patients/register.html',form=form,title='PATIENT\'S REGISTRATION')
     
-    return render_template('/patients/register.html',form=form,title='PATIENT REGISTRATION')
+    return render_template('/patients/register.html',form=form,title='PATIENT\'S REGISTRATION')
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -199,7 +245,7 @@ def adminlogin():
                     abort(403)
             else:
                     flash('User does not exist', 'error')
-    return render_template('/admins/login.html',form=form)
+    return render_template('/admins/login.html',form=form,title='ADMIN LOGIN')
 @app.route("/admins/logout")
 def adminlogout():
     logout_user()
@@ -228,7 +274,7 @@ def manageadmins():
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
             userdata=AdminCredentials.query.paginate(page=page, per_page=5)
-            return render_template('/admins/manageadmins.html', data=userdata)
+            return render_template('/admins/manageadmins.html', data=userdata, title='MANAGE ADMINS')
         else:
                     flash('Access Denied', 'error')
                     abort(403)
@@ -243,7 +289,7 @@ def managepatients():
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
             userdata=PatientCredentials.query.paginate(page=page, per_page=5)
-            return render_template('/admins/managepatients.html', data=userdata)
+            return render_template('/admins/managepatients.html', data=userdata, title='MANAGE PATIENTS')
         else:
                     flash('Access Denied', 'error')
                     abort(403)
@@ -257,7 +303,7 @@ def managedoctors():
         if session["account_type"] == "Admin":
             page = request.args.get('page', 1, type=int)
             userdata=DoctorCredentials.query.paginate(page=page, per_page=5)
-            return render_template('/admins/managedoctors.html', data=userdata)
+            return render_template('/admins/managedoctors.html', data=userdata, title='MANAGE DOCTORS')
         else:
                 flash('Access Denied', 'error')
                 abort(403)
@@ -616,7 +662,7 @@ def doctorlogin():
                     abort(403)
             else:
                 flash('User does not exist', 'error')
-    return render_template('/doctors/login.html',form=form)
+    return render_template('/doctors/login.html',form=form, title='DOCTOR\'S LOGIN')
 @app.route("/doctors/logout")
 def doctorlogout():
     logout_user()
@@ -652,45 +698,71 @@ def predict():
                     # Model loading
                     classifier=pk.load(open(modelpathfile,'rb'))
                     # Obtaining features from sliders
-                    pregnanciesno=request.form["pregnanciesno"]
-                    glucose=request.form["glucoselevels"]
+                    pregnanciesno=request.form["pregnancies"]
+                    if pregnanciesno == 'None':
+                        pregnanciesno=0
+                    if pregnanciesno == 'Greater than or equal to one and less than five':
+                        pregnanciesno=random.randint(1,5)
+                    if pregnanciesno == 'Greater than or equal to five':
+                        pregnanciesno=random.randint(5,15)
+                    glucose=request.form["glucose"]
+                    if glucose == 'Less than or equal to 70 mg/dl':
+                        glucose=random.randint(50,71)
+                    if glucose == 'Greater than 70 mg/dl and less than 180 mg/dl':
+                        glucose=random.randint(71,180)
+                    if glucose == 'Greater than 180 mg/dl':
+                        glucose=random.randint(180,201)
                     height=request.form["height"]
+                    if height == 'Less than or equal to 100cm':
+                        height=1
+                    if height == 'Greater than 100cm and less than 200cm':
+                        height=round(random.uniform(1.0,2.0),1)
+                    if height == 'Greater than or equal to 200cm':
+                        height=round(random.uniform(2.0,3.0),1)
                     weight=request.form["weight"]
+                    if weight == 'Less than 50kg':
+                        weight=round(random.uniform(30.0,50.0),1)
+                    if weight == 'Greater than or equal to 50kg and less than 84kg':
+                        weight=round(random.uniform(50.0,85.0),1)
+                    if weight == 'Greater than or equal to 84kg and less than 112kg':
+                        weight=round(random.uniform(85.0,112.0),1)
+                    if weight == 'Greater than 112kg':
+                        weight=round(random.uniform(112.0,130.0),1)
+                    pedigree=request.form["pedigree"]
+                    pedigreevalue=0
+                    if pedigree == 'Yes':
+                        pedigree=round(random.uniform(1.0,2.5),3)
+                        pedigreevalue=1
+                    if pedigree == 'No':
+                        pedigree=round(random.uniform(0.0,1.0),3)
+                        pedigreevalue=0
+                    insulin=request.form["insulin"]
+                    if insulin == 'Less than or equal to 20 mU/ml':
+                        insulin=random.randint(2,20)
+                    if insulin == 'Greater than 20 mU/ml and Less than or equal to 80 mU/ml':
+                        insulin=random.randint(20,81)
+                    if insulin == 'Greater than 80 mU/ml':
+                        insulin=random.randint(81,300)
                     bmi=float(weight)/(float(height)**2)
-                    insulin=request.form["insulinlevels"]
-                    Age=request.form["age"]
-                    patientid=int(request.form['patientid'])
-                    pedigree=request.form["Pedigree"]
-                    SkinThickness=request.form["skinthickness"]
-                    features=[pregnanciesno,glucose,SkinThickness,insulin,bmi,pedigree,Age]
+                    patientid=int(request.form['patientsselect'])
+                    patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
+                    patientdob=datetime.strptime(str(patientDoB), '%Y-%m-%d %H:%M:%S')
+                    age=datetime.now().year-patientdob.year
+                    features=[pregnanciesno,glucose,insulin,bmi,pedigree,age]
                     features=[float (x) for x in features]
                     features=np.array(features)
                     features=features.reshape(1,-1)
                     # outcome prediction
                     predictionvalue=classifier.predict(features)
-                    predictionresults=classifier.predict(features)
-                    patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
-                    patientdob=datetime.strptime(str(patientDoB), '%Y-%m-%d %H:%M:%S')
-                    age=datetime.now().year-patientdob.year
+                    predictionprob=classifier.predict_proba(features)
                     # Storing predictions in database
-                    predictionresults=Predictions(glucose=glucose,insulin=insulin,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
+                    predictionresults=Predictions(glucose=glucose,pregnancies=pregnanciesno,insulin=insulin,height=height,weight=weight,pedigree=pedigreevalue,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
                     db.session.add(predictionresults)
                     db.session.commit()
-                    if predictionvalue==1:
-                        pred="You have higher chances of Diabetes"
-                    if predictionvalue==0:
-                        pred="You have minimal chances of Diabetes"
-                    africastalking.initialize(username='Victor Maina', api_key='b7f8b249b223c859de2b5bad3d52db5e56da4ca2bdde1a590801b5184ecc2b47')
-                    sms = africastalking.SMS
-                    def on_finish(error, res):
-                        if error is not None:
-                            raise error
-                        print(res)
-                    res = sms.send(message='hello', recipients=['+254793835669'],callback=on_finish)
-                    return render_template('/doctors/predictdisease.html',pred=pred,form=form)
+                    return render_template('/doctors/predictdisease.html',pred=predictionvalue,prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION')
 
                 else:
-                    return render_template('/doctors/predictdisease.html',form=form)
+                    return render_template('/doctors/predictdisease.html',form=form,title='PATIENT HEALTH PREDICTION')
                             # features=[6,148,72,35,0,33.6,50]
                     # bloodpressure=request.form["pressurelevels"]
         else:
@@ -711,7 +783,7 @@ def predictwithid(patient_id):
                 form.patientsselect.choices=[(patient.id, " ".join([patient.fname, patient.lname])) for patient in Patients.query.all()]
                 form.patientsselect.default=patient_id
                 form.process()
-                return render_template('/doctors/predictdisease.html',patients=patients,form=form)
+                return render_template('/doctors/predictdisease.html',patients=patients,form=form,title='PATIENT HEALTH PREDICTION')
 
         else:
             flash('Access Denied', 'error')
@@ -726,7 +798,7 @@ def trainmodel():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
             X,Y=mutils.datapreprocessing(datasetpathfile)
-            return render_template('/doctors/accuracycomputation.html',trainingresults=mutils.train(X,Y))
+            return render_template('/doctors/accuracycomputation.html',trainingresults=mutils.train(X,Y),title='ACCURACY COMPUTATION')
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -739,7 +811,7 @@ def trainmodel():
 def displayaccuracypage():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
-            return render_template('/doctors/accuracycomputation.html')
+            return render_template('/doctors/accuracycomputation.html',title='ACCURACY COMPUTATION')
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -753,7 +825,7 @@ def computemetrics():
     if "account_type" in session:
         if session["account_type"] == "Doctor":
             X,Y=mutils.datapreprocessing(datasetpathfile)
-            return render_template('/doctors/accuracycomputation.html',evaluationmetrics=mutils.computemetrics(X,Y))
+            return render_template('/doctors/accuracycomputation.html',evaluationmetrics=mutils.computemetrics(X,Y),title='ACCURACY COMPUTATION')
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -768,7 +840,7 @@ def doctorsreports():
         if session["account_type"] == "Doctor":
             page = request.args.get('page', 1, type=int)
             patientdata=Predictions.query.paginate(page=page, per_page=5)
-            return render_template('/doctors/reports.html',patients=patientdata)
+            return render_template('/doctors/reports.html',patients=patientdata, title='PATIENT REPORTS')
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -776,6 +848,22 @@ def doctorsreports():
     else:
         flash('Access Denied', 'error')
         abort(403)
+@app.route("/doctors/fetchrecords" ,methods=['POST','GET'])
+def asyncfetchrecords():
+    if request.method=='POST':
+        qtc_data = request.get_json()
+        if qtc_data[0]['Gender'] and not qtc_data[0]['Outcome']:
+            # session.query(Customer).join(Invoice).filter(Invoice.amount == 8500)
+            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.gender==qtc_data[0]['Gender'])
+        elif not qtc_data[0]['Gender'] and qtc_data[0]['Outcome']:
+            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.outcome==qtc_data[0]['Outcome'])
+            results = {'rows': records}
+            return jsonify(results)
+        else:
+            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.gender==qtc_data[0]['Gender'],PatientCredentials.outcome==qtc_data[0]['Outcome'])
+            results = {'rows': records}
+            return jsonify(results)
+
 @app.route("/doctors/messages")
 @login_required
 def patientnotifications():
@@ -783,7 +871,7 @@ def patientnotifications():
         if session["account_type"] == "Doctor":
             page = request.args.get('page', 1, type=int)
             patientdata=PatientMessages.query.order_by(PatientMessages.date_posted.desc()).paginate(page=page, per_page=5)
-            return render_template('/doctors/notifications.html',msg=patientdata)
+            return render_template('/doctors/notifications.html',msg=patientdata, title='PATIENT NOTIFICATIONS')
         else:
             flash('Access Denied', 'error')
             abort(403)

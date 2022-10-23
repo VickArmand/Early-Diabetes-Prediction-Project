@@ -1,6 +1,5 @@
 from flask import Flask,session
 import numpy as np
-import xgboost as xgb
 import os
 import pickle as pk
 # predict,datapreprocessing,train,modelgeneration,computemetrics
@@ -16,6 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
 app.config['SECRET_KEY']='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
 bcrypt=Bcrypt(app)
 db=SQLAlchemy(app)
+
 login_manager=LoginManager(app)
 login_manager.login_view='login'
 login_manager.login_message_category='warning'

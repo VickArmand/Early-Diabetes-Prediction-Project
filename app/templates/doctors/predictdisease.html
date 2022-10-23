@@ -53,11 +53,21 @@
       {%endfor%}
       {%endif%}
       <div class="flex justify-between items-center my-2 gap-4">
-        {{form.bloodpressure.label()}} 
-        {{form.bloodpressure(class='py-2 px-8 rounded bg-inputbg')}}
+        {{form.insulin.label()}} 
+        {{form.insulin(class='py-2 px-8 rounded bg-inputbg')}}
       </div>
-      {%if form.bloodpressure.errors%}
-      {%for error in form.bloodpressure.errors%}
+      {%if form.insulin.errors%}
+      {%for error in form.insulin.errors%}
+      <span class="text-red-500">{{error}}</span>
+      {%endfor%}
+      {%endif%}
+        </div>
+      <div class="flex justify-between items-center my-2 gap-4">
+        {{form.pedigree.label()}} 
+        {{form.pedigree(class='py-2 px-8 rounded bg-inputbg')}}
+      </div>
+      {%if form.pedigree.errors%}
+      {%for error in form.pedigree.errors%}
       <span class="text-red-500">{{error}}</span>
       {%endfor%}
       {%endif%}
@@ -65,23 +75,18 @@
         <div class="flex flex-col items-center  mt-5">
           {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}}
         </div>
-          {{pred}}
+          {%if pred == 0%}
+          {{prob}}
+          "You have minimal chances of Diabetes"
+          {%endif%}
+          {%if pred == 1%}
+          {{prob}}
+          "You have higher chances of Diabetes"
+          {%endif%}
+          
       </form>
   </div>
  
 </div>
 
 {% endblock content %}
-<script>
-  const slidervalue=document.querySelector('p')
-const inputSlider=document.querySelector('input')
-inputSlider.oninput=(()=>{
-    let value=inputSlider.value;
-    slidervalue.textContent=value;
-    slidervalue.style.left=(value/2)+'%'; 
-    slidervalue.classList.add('show')
-});
-inputSlider.onblur=(()=>{
-    slidervalue.classList.remove('show')
-})
-</script>

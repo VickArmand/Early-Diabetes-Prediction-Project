@@ -20,7 +20,11 @@ class ModelUtils:
         diabetesdata= pd.read_csv(diabetesdataurl)
         diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']] = diabetesdata[['Glucose','BloodPressure','SkinThickness','Insulin','BMI']].replace(0,np.NaN)
         diabetesdata.dropna(inplace=True)
-        X=diabetesdata.drop(['Outcome','BloodPressure','SkinThickness'],axis=1)
+        # diabetesdata['SkinThickness']=diabetesdata['SkinThickness'].replace(0,np.median(diabetesdata['SkinThickness']))
+        # diabetesdata['Insulin']=diabetesdata['Insulin'].replace(0,np.median(diabetesdata['Insulin']))
+        # diabetesdata['BMI']=diabetesdata['BMI'].replace(0,np.median(diabetesdata['BMI']))        
+        # X=diabetesdata.drop(['Outcome','BloodPressure','SkinThickness'],axis=1)
+        X=diabetesdata.drop(['Outcome','SkinThickness','BloodPressure'],axis=1)
         Y=diabetesdata['Outcome']
         # scaler = StandardScaler()
         # X = scaler.fit_transform(X)
@@ -28,7 +32,7 @@ class ModelUtils:
     # Method for model training which returns accuracy and saves model in a file
     def train(X,Y):  
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
-        classifier=svm.SVC(kernel='linear')
+        classifier=svm.SVC(probability=True,kernel='linear')
         classifier.fit(X_train,Y_train)
         testpreds=classifier.predict(X_test)
         testaccuracy=accuracy_score(Y_test,testpreds)*100
@@ -51,11 +55,11 @@ class ModelUtils:
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
         modelpipe1=Pipeline([('model', LogisticRegression()),])
         modelpipe3=Pipeline([ ('model', svm.SVC(kernel='linear')),])
-        modelpipe4=Pipeline([('model', RandomForestClassifier(n_estimators=2,criterion="entropy")),])
+        modelpipe4=Pipeline([('model', RandomForestClassifier(n_estimators=200,criterion="entropy")),])
         modelpipe5=Pipeline([('model', KNeighborsClassifier(n_neighbors=2,metric="minkowski",p=2)),])
         modelpipe1.fit(X_train, Y_train)
         # modelpipe2.fit(X_train, Y_train)
-        modelpipe3.fit(X_train, Y_train)
+        modelpipe3.fit(X_train.values, Y_train)
         modelpipe4.fit(X_train, Y_train)
         modelpipe5.fit(X_train, Y_train)
         testpred1=modelpipe1.predict(X_test)
