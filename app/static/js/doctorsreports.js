@@ -9,16 +9,18 @@ function filterdetails(){
     }
     else if(selectedgender.options[selectedgender.selectedIndex].value=='' && selectedoutcome.options[selectedoutcome.selectedIndex].value!==''){
         parameters='gender';
-        var server_data = [
-            {"Gender": null},
-            {"Outcome": selectedoutcome.options[selectedoutcome.selectedIndex].value},
-           ];
+        var server_data = {
+            "Gender": null,
+            "Outcome": selectedoutcome.options[selectedoutcome.selectedIndex].value,
+        };
+            
            const xmlhttp= new XMLHttpRequest();
            xmlhttp.open('POST','/doctors/fetchrecords',true);
+           xmlhttp.setRequestHeader('Content-type','application/json; charset=UTF-8')
            xmlhttp.send(JSON.stringify(server_data));
            xmlhttp.onreadystatechange=()=>{
                if(xmlhttp.readyState==4 && xmlhttp.status==200){
-                   console.log(JSON.parse(xmlhttp.responseText));
+
                    var users= JSON.parse(xmlhttp.responseText);
                    console.log(users);
                }
@@ -26,32 +28,35 @@ function filterdetails(){
     }
     else if(selectedgender.options[selectedgender.selectedIndex].value!=='' && selectedoutcome.options[selectedoutcome.selectedIndex].value==''){
         parameters='outcome';
-        var server_data = [
-            {"Gender": selectedgender.options[selectedgender.selectedIndex].value},
-            {"Outcome": null},
-           ];
+        var server_data = {
+            "Gender": selectedgender.options[selectedgender.selectedIndex].value,
+            "Outcome": null,
+        };
+        console.log(JSON.stringify(server_data))
            const xmlhttp= new XMLHttpRequest();
            xmlhttp.open('POST','/doctors/fetchrecords',true);
+           xmlhttp.setRequestHeader('Content-type','application/json; charset=UTF-8')
            xmlhttp.send(JSON.stringify(server_data));
            xmlhttp.onreadystatechange=()=>{
                if(xmlhttp.readyState==4 && xmlhttp.status==200){
-                   console.log(JSON.parse(xmlhttp.responseText));
+
                    var users= JSON.parse(xmlhttp.responseText);
                    console.log(users);
                }
             }
     }
     else{
-        var server_data = [
-            {"Gender": selectedgender.options[selectedgender.selectedIndex].value},
-            {"Outcome": selectedoutcome.options[selectedoutcome.selectedIndex].value},
-           ];
+        var server_data = {
+            "Gender": selectedgender.options[selectedgender.selectedIndex].value,
+            "Outcome": selectedoutcome.options[selectedoutcome.selectedIndex].value,
+        };
+        console.log(JSON.stringify(server_data))
         const xmlhttp= new XMLHttpRequest();
         xmlhttp.open("POST","/doctors/fetchrecords",true);
+        xmlhttp.setRequestHeader('Content-type','application/json; charset=UTF-8')
         xmlhttp.send(JSON.stringify(server_data));
         xmlhttp.onreadystatechange=()=>{
             if(xmlhttp.readyState==4 && xmlhttp.status==200){
-                console.log(JSON.parse(xmlhttp.responseText));
                 var users= JSON.parse(xmlhttp.responseText);
                 console.log(users);
                 // output='';

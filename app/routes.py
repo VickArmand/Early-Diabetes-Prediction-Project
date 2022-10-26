@@ -1,5 +1,6 @@
 from flask import render_template,request,url_for,redirect,session,flash,abort,jsonify
 import os
+import json
 import sqlite3
 import io
 from app import app,pk,np,db,bcrypt
@@ -8,6 +9,7 @@ from app.forms import *
 from app.modelutils import ModelUtils as mutils
 from flask_login import login_user,current_user,logout_user,login_required
 import random
+import africastalking as at
 # Constructing web routes
 datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
@@ -54,18 +56,16 @@ def restore():
 # MSG SEND
 @app.route("/sendmsg")
 def sendmsg():
-        account_sid ='AC67709da7c1191c82b213d6c3bb85af50'
-        auth_token = '5e6b05aafa06ce2099b38408a5aa309a'
-        client = Client(account_sid, auth_token)
-
-        message = client.messages.create(
-                            body="Join Earth's mightiest heroes. Like Kevin Bacon.",
-                            from_='+15017122661',
-                            to='+254793835669'
-                        )
-
-        print(message.sid)
-        return redirect(url_for('index'))
+    api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
+    username = "diabetesproj"
+    number="+254727617870"
+    message = "Hello there first sms"
+    # Initialize the Africas Talking client with the required credentials
+    at.initialize(username, api_key)
+    # assign the sms functionality to a variable
+    sms = at.SMS
+    response = sms.send(message, [number])
+    print(response)
 # Patients routes
 @app.route("/login",methods=["POST","GET"])
 def login():
@@ -759,6 +759,7 @@ def predict():
                     predictionresults=Predictions(glucose=glucose,pregnancies=pregnanciesno,insulin=insulin,height=height,weight=weight,pedigree=pedigreevalue,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
                     db.session.add(predictionresults)
                     db.session.commit()
+                    # send msg
                     return render_template('/doctors/predictdisease.html',pred=predictionvalue,prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION')
 
                 else:
@@ -850,20 +851,33 @@ def doctorsreports():
         abort(403)
 @app.route("/doctors/fetchrecords" ,methods=['POST','GET'])
 def asyncfetchrecords():
+    results =""
     if request.method=='POST':
         qtc_data = request.get_json()
-        if qtc_data[0]['Gender'] and not qtc_data[0]['Outcome']:
+        # print(qtc_data['Gender'])
+        # print(qtc_data['Outcome'])
+        if qtc_data['Gender'] and not qtc_data['Outcome']:
             # session.query(Customer).join(Invoice).filter(Invoice.amount == 8500)
-            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.gender==qtc_data[0]['Gender'])
-        elif not qtc_data[0]['Gender'] and qtc_data[0]['Outcome']:
-            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.outcome==qtc_data[0]['Outcome'])
+            records=Predictions.query.join(PatientCredentials).filter(Patients.gender==qtc_data['Gender'])
             results = {'rows': records}
-            return jsonify(results)
-        else:
-            records=Predictions.query(Patients).join(PatientCredentials).filter_by(Patients.gender==qtc_data[0]['Gender'],PatientCredentials.outcome==qtc_data[0]['Outcome'])
-            results = {'rows': records}
-            return jsonify(results)
 
+        elif not qtc_data['Gender'] and qtc_data['Outcome']:
+            # records=Predictions.query(Patients.id).join(PatientCredentials.patientid).filter_by(Patients.outcome==qtc_data['Outcome'])
+            records=Predictions.query.join(Patients, Predictions.patientpred==Patients.id).filter(Predictions.outcome==qtc_data['Outcome']).all()
+            results = {'rows': records}
+    #         userList = users.query\
+    # .join(friendships, users.id==friendships.user_id)\
+    # .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
+    # .filter(users.id == friendships.friend_id)\
+    # .filter(friendships.user_id == userID)\
+    # .paginate(page, 1, False)
+            
+        elif qtc_data['Gender'] and qtc_data['Outcome']:
+            records=Predictions.query.join(Patients).filter(Patients.gender==qtc_data['Gender'],Predictions.outcome==qtc_data['Outcome'])
+            results = {'rows': records}
+        else:
+            return jsonify(results)
+        return jsonify(results)
 @app.route("/doctors/messages")
 @login_required
 def patientnotifications():
