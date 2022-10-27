@@ -76,14 +76,14 @@
           {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}}
         </div>
           {%if pred == 0%}
-          {{prob}}
-          "You have minimal chances of Diabetes"
+          <span class="text-green-500"> The patient has {{prob}}% chances of having diabetes hence low risk of Diabetes</span>
           {%endif%}
           {%if pred == 1%}
-          {{prob}}
-          "You have higher chances of Diabetes"
+          <span class="text-red-500"> The patient has {{prob}}% chances of having diabetes hence high risk of Diabetes</span>
           {%endif%}
-          
+          {%for x in res%}
+          {{ x }}
+          {%endfor%}
       </form>
   </div>
  

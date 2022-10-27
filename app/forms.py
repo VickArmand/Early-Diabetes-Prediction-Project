@@ -1,6 +1,7 @@
 from app.models import *
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, RadioField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, RadioField,IntegerField
+from wtforms.widgets import NumberInput
 from wtforms.validators import DataRequired, Length,Email, EqualTo, ValidationError, Regexp
 import phonenumbers
 from datetime import datetime
@@ -164,7 +165,8 @@ class AdminEditAdmins(AdminRegistrationForm):
     submit=SubmitField('UPDATE')
 class HealthPredictionForm(FlaskForm):
     patientsselect=SelectField('Select A Patient',validators=[DataRequired()], choices=[('','---Select A Patient---')])
-    pregnancies=SelectField('Number of times pregnant',validators=[DataRequired()], choices=[('','-- SELECT A VALUE --'),('None','None'),('Greater than or equal to one and less than five','Greater than or equal to one and less than five'),('Greater than or equal to five','Greater than or equal to five')])
+    # pregnancies=SelectField('Number of times pregnant',validators=[DataRequired()], choices=[('','-- SELECT A VALUE --'),('None','None'),('Greater than or equal to one and less than five','Greater than or equal to one and less than five'),('Greater than or equal to five','Greater than or equal to five')])
+    pregnancies=IntegerField('Number of times pregnant',widget=NumberInput(step=1, min=0, max=20), validators=[DataRequired()])
     height=SelectField('Height of the Patient',validators=[DataRequired()], choices=[('','-- SELECT A VALUE --'),('Less than or equal to 100cm','Less than or equal to 100cm'),('Greater than 100cm and less than 200cm','Greater than 100cm and less than 200cm'),('Greater than or equal to 200cm','Greater than or equal to 200cm')])
     weight=SelectField('Weight of the Patient',validators=[DataRequired()], choices=[('','-- SELECT A VALUE --'),('Less than 50kg','Less than 50kg'),('Greater than or equal to 50kg and less than 84kg','Greater than or equal to 50kg and less than 84kg'),('Greater than or equal to 84kg and less than 112kg','Greater than or equal to 84kg and less than 112kg'),('Greater than 112kg','Greater than 112kg')])
     glucose=SelectField('Glucose level of the Patient',validators=[DataRequired()], choices=[('','-- SELECT A VALUE --'),('Less than or equal to 70 mg/dl','Less than or equal to 70 mg/dl'),('Greater than 70 mg/dl and less than 180 mg/dl','Greater than 70 mg/dl and less than 180 mg/dl'),('Greater than 180 mg/dl','Greater than 180 mg/dl')])

@@ -3,7 +3,6 @@ import numpy as np
 import os
 import pickle as pk
 # predict,datapreprocessing,train,modelgeneration,computemetrics
-from app.sendnotification import sendmail
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_bcrypt import Bcrypt

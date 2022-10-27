@@ -68,19 +68,19 @@ class ModelUtils:
         testpred4=modelpipe4.predict(X_test)
         testpred5=modelpipe5.predict(X_test)
         accuracy={
-                'Logistic Regression':accuracy_score(Y_test,testpred1)*100,
-                'SVM':accuracy_score(Y_test,testpred3)*100,
-                'Random Forest':accuracy_score(Y_test,testpred4)*100,        
-                'K-Nearest Neighbours':accuracy_score(Y_test,testpred5)*100
+                'Logistic Regression':round(accuracy_score(Y_test,testpred1)*100,2),
+                'SVM':round(accuracy_score(Y_test,testpred3)*100,2),
+                'Random Forest':round(accuracy_score(Y_test,testpred4)*100,2),        
+                'K-Nearest Neighbours':round(accuracy_score(Y_test,testpred5)*100,2)
                 # 'confusion matrix ':confusion_matrix(Y_test,testpred1),
                 # 'classification report':classification_report(Y_test,testpred1)
             },
         # accuracy=[accuracy_score(Y_test,testpred1)*100,accuracy_score(Y_test,testpred3)*100,accuracy_score(Y_test,testpred4)*100,accuracy_score(Y_test,testpred5)*100]
         mse={
-                'Logistic Regression': mean_squared_error(Y_test,testpred1),
-                'SVM': mean_squared_error(Y_test,testpred3),
-                'Random Forest': mean_squared_error(Y_test,testpred4),
-                'K-Nearest Neighbours': mean_squared_error(Y_test,testpred5),
+                'Logistic Regression': round(mean_squared_error(Y_test,testpred1),2),
+                'SVM': round(mean_squared_error(Y_test,testpred3),2),
+                'Random Forest': round(mean_squared_error(Y_test,testpred4),2),
+                'K-Nearest Neighbours': round(mean_squared_error(Y_test,testpred5),2),
             },
         fs={
                 'Logistic Regression': f1_score(Y_test, testpred1),

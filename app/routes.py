@@ -4,12 +4,13 @@ import json
 import sqlite3
 import io
 from app import app,pk,np,db,bcrypt
+from app import sendnotification
 from app.models import *
 from app.forms import * 
 from app.modelutils import ModelUtils as mutils
 from flask_login import login_user,current_user,logout_user,login_required
 import random
-import africastalking as at
+from app.sendnotification import *
 # Constructing web routes
 datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
@@ -56,16 +57,8 @@ def restore():
 # MSG SEND
 @app.route("/sendmsg")
 def sendmsg():
-    api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
-    username = "diabetesproj"
-    number="+254727617870"
-    message = "Hello there first sms"
-    # Initialize the Africas Talking client with the required credentials
-    at.initialize(username, api_key)
-    # assign the sms functionality to a variable
-    sms = at.SMS
-    response = sms.send(message, [number])
-    print(response)
+    sendnotification.sendtestmsg()
+    return redirect(url_for('index'))
 # Patients routes
 @app.route("/login",methods=["POST","GET"])
 def login():
@@ -699,12 +692,12 @@ def predict():
                     classifier=pk.load(open(modelpathfile,'rb'))
                     # Obtaining features from sliders
                     pregnanciesno=request.form["pregnancies"]
-                    if pregnanciesno == 'None':
-                        pregnanciesno=0
-                    if pregnanciesno == 'Greater than or equal to one and less than five':
-                        pregnanciesno=random.randint(1,5)
-                    if pregnanciesno == 'Greater than or equal to five':
-                        pregnanciesno=random.randint(5,15)
+                    # if pregnanciesno == 'None':
+                    #     pregnanciesno=0
+                    # if pregnanciesno == 'Greater than or equal to one and less than five':
+                    #     pregnanciesno=random.randint(1,5)
+                    # if pregnanciesno == 'Greater than or equal to five':
+                    #     pregnanciesno=random.randint(5,15)
                     glucose=request.form["glucose"]
                     if glucose == 'Less than or equal to 70 mg/dl':
                         glucose=random.randint(50,71)
@@ -743,9 +736,11 @@ def predict():
                         insulin=random.randint(20,81)
                     if insulin == 'Greater than 80 mU/ml':
                         insulin=random.randint(81,300)
-                    bmi=float(weight)/(float(height)**2)
+                    bmi=round(float(weight)/(float(height)**2),3)
                     patientid=int(request.form['patientsselect'])
-                    patientDoB=Patients.query.filter_by(id=patientid).first().dateofbirth
+                    patientdetails=Patients.query.filter_by(id=patientid).first()
+                    patientDoB=patientdetails.dateofbirth
+                    patientcontact=patientdetails.contact
                     patientdob=datetime.strptime(str(patientDoB), '%Y-%m-%d %H:%M:%S')
                     age=datetime.now().year-patientdob.year
                     features=[pregnanciesno,glucose,insulin,bmi,pedigree,age]
@@ -754,13 +749,20 @@ def predict():
                     features=features.reshape(1,-1)
                     # outcome prediction
                     predictionvalue=classifier.predict(features)
-                    predictionprob=classifier.predict_proba(features)
+                    predictionprob=round(classifier.predict_proba(features)[0][1]*100,2)
                     # Storing predictions in database
-                    predictionresults=Predictions(glucose=glucose,pregnancies=pregnanciesno,insulin=insulin,height=height,weight=weight,pedigree=pedigreevalue,bmi=bmi,age=age,outcome=predictionvalue[0],patientpred=patientid)
+                    predictionresults=Predictions(glucose=glucose,pregnancies=pregnanciesno,insulin=insulin,height=height,weight=weight,pedigree=pedigreevalue,bmi=bmi,age=age,outcome=predictionvalue[0].item(),patientpred=patientid)
                     db.session.add(predictionresults)
                     db.session.commit()
+                    predstr=" "
+                    if predictionvalue[0].item() == 0:
+                        predstr="low risk of diabetes"
+                    else:
+                        predstr="high risk of diabetes"
                     # send msg
-                    return render_template('/doctors/predictdisease.html',pred=predictionvalue,prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION')
+                    # message=f"Hello there patient {patientdetails.fname} {patientdetails.lname} , Mugema's Diabetes Prediction is here to inform you that from your recent diagosis on {datetime.now().strftime('%Y-%m-%d')} the predictions have yielded that you are at {predstr} due to the fact that you have {predictionprob}% chances of having diabetes. Remember its important to maintain healthy weight, get regular exercise, eat a healthy diet "
+                    # sendnotification.sendcustomizedsms(patientcontact,message)
+                    return render_template('/doctors/predictdisease.html',pred=predictionvalue[0].item(),prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION',res=[pregnanciesno,glucose,insulin,height,weight,bmi,age,pedigree,predictionvalue[0].item()])
 
                 else:
                     return render_template('/doctors/predictdisease.html',form=form,title='PATIENT HEALTH PREDICTION')
@@ -858,13 +860,15 @@ def asyncfetchrecords():
         # print(qtc_data['Outcome'])
         if qtc_data['Gender'] and not qtc_data['Outcome']:
             # session.query(Customer).join(Invoice).filter(Invoice.amount == 8500)
-            records=Predictions.query.join(PatientCredentials).filter(Patients.gender==qtc_data['Gender'])
+            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender'])
             results = {'rows': records}
 
         elif not qtc_data['Gender'] and qtc_data['Outcome']:
             # records=Predictions.query(Patients.id).join(PatientCredentials.patientid).filter_by(Patients.outcome==qtc_data['Outcome'])
-            records=Predictions.query.join(Patients, Predictions.patientpred==Patients.id).filter(Predictions.outcome==qtc_data['Outcome']).all()
+            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Predictions.outcome==qtc_data['Outcome']).all()
+            # records=[tuple(row) for row in records]
             results = {'rows': records}
+            
     #         userList = users.query\
     # .join(friendships, users.id==friendships.user_id)\
     # .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
@@ -873,11 +877,12 @@ def asyncfetchrecords():
     # .paginate(page, 1, False)
             
         elif qtc_data['Gender'] and qtc_data['Outcome']:
-            records=Predictions.query.join(Patients).filter(Patients.gender==qtc_data['Gender'],Predictions.outcome==qtc_data['Outcome'])
+            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender'],Predictions.outcome==qtc_data['Outcome'])
             results = {'rows': records}
         else:
-            return jsonify(results)
-        return jsonify(results)
+            return json.dumps(results ,default=str)
+        print (json.dumps(results ,default=str))
+        return json.dumps(results ,default=str)
 @app.route("/doctors/messages")
 @login_required
 def patientnotifications():

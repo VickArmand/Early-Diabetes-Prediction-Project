@@ -1,35 +1,17 @@
-# import smtplib
-
-# def sendmail(recipient, content,title):
-#     sender = 'victormaina1962@gmail.com'
-#     receivers = [recipient]
-#     message = content
-#     # try:
-#     smtpObj = smtplib.SMTP('localhost')
-#     smtpObj.sendmail(sender, receivers, message)         
-#     # except SMTPException:
-#     #     print ("Error: unable to send email")
-#     # finally:
-#     #    print ("Successfully sent email")  
-# recipient='mugechivictor@students.must.ac.ke'
-# content='Hello there brother'
-# title='Greetings'
-# sendmail(recipient, content,title)
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-def sendmail(from_address,to_address, content):
-    from_address = 'johndoe@gmail.com'
-    to_address = 'johndoe@gmail.com'
-    message = MIMEMultipart('Foobar')
-    message['From'] = from_address
-    message['To'] = to_address
-    content = MIMEText(content, 'plain')
-    message.attach(content)
-    mail = smtplib.SMTP('smtp.gmail.com', 587)
-    mail.ehlo()
-    mail.starttls()
-    mail.login(from_address, 'password')
-    mail.sendmail(from_address,to_address, message.as_string())
-    mail.close()
-
+import africastalking as at
+api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
+username = "diabetesproj"
+# Initialize the Africas Talking client with the required credentials
+at.initialize(username, api_key)
+def sendtestmsg():
+    number="+254727617870"
+    message = "Hello there first test sms"    
+    # assign the sms functionality to a variable
+    sms = at.SMS
+    response = sms.send(message, [number])
+    return response
+def sendcustomizedsms(recipient,message):
+    # assign the sms functionality to a variable
+    sms = at.SMS
+    response = sms.send(message, [recipient])
+    return response
