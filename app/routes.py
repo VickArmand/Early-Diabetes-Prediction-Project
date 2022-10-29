@@ -778,6 +778,7 @@ def predict():
                     # send msg
                     message=f"Hello there patient {patientdetails.fname} {patientdetails.lname} , Mugema's Diabetes Prediction is here to inform you that from your recent diagosis on {datetime.now().strftime('%Y-%m-%d')} the predictions have yielded that you are at {predstr} due to the fact that you have a {predictionprob}% chance of having diabetes. Remember its important to maintain healthy weight, get regular exercise, eat a healthy diet. Thank you and together let's fight against diabetes"
                     response,issent=sendnotification.sendcustomizedsms(patientcontact,message,False)
+                    print(response)
                     if issent :
                         notifications=PatientMessages(title='Health Status Notification',body=message,recipientpat=patientdetails)
                         db.session.add(notifications)
