@@ -33,7 +33,7 @@
          {%endif%}
       </table>
       <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-        <a href="{{ url_for('doctorsreports', page=msg.prev_num) }}"
+        <a href="{{ url_for('patientnotifications', page=msg.prev_num) }}"
            class="py-4 px-2 border-r border-white
            {% if msg.page == 1 %}disabled{% endif %}">
             &laquo;
@@ -43,12 +43,12 @@
       {% if page_num %}
       <!-- Check for the active page and set the link to "Active"-->
                 {% if msg.page == page_num %}
-                <a href="{{ url_for('doctorsreports', page=page_num) }}"
+                <a href="{{ url_for('patientnotifications', page=page_num) }}"
                    class="py-4 px-2 border-r border-white">
                     {{ page_num }}
                 </a>
                 {% else %}
-                <a href="{{ url_for('doctorsreports', page=page_num) }}"
+                <a href="{{ url_for('patientnotifications', page=page_num) }}"
                    class="py-4 px-2 border-r border-white">
                     {{ page_num }}
                 </a>
@@ -57,7 +57,7 @@
                 ...
             {% endif %}
         {% endfor %}
-        <a href="{{ url_for('doctorsreports', page=msg.next_num) }}"
+        <a href="{{ url_for('patientnotifications', page=msg.next_num) }}"
            class="py-4 px-2
            {% if msg.page == msg.pages %}disabled{% endif %}">
             &raquo;

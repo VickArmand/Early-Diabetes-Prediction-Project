@@ -33,11 +33,11 @@ class ModelUtils:
     def train(X,Y):  
         X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
         classifier=svm.SVC(probability=True,kernel='linear')
-        classifier.fit(X_train,Y_train)
+        classifier.fit(X_train.values,Y_train.values)
         testpreds=classifier.predict(X_test)
-        testaccuracy=accuracy_score(Y_test,testpreds)*100
+        testaccuracy=round(accuracy_score(Y_test,testpreds)*100,2)
         # f1score= f1_score(Y_test,testpreds, average=None)
-        mse=mean_squared_error(Y_test,testpreds)        
+        mse=round(mean_squared_error(Y_test,testpreds),2)       
         modelspath='./app/static/ML Model'
         modelfile= "diabetespredmodelusingxgboost.pkl"
         modelpathfile=os.path.join(modelspath,modelfile)

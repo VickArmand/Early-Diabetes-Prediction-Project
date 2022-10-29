@@ -699,26 +699,36 @@ def predict():
                     # if pregnanciesno == 'Greater than or equal to five':
                     #     pregnanciesno=random.randint(5,15)
                     glucose=request.form["glucose"]
-                    if glucose == 'Less than or equal to 70 mg/dl':
-                        glucose=random.randint(50,71)
-                    if glucose == 'Greater than 70 mg/dl and less than 180 mg/dl':
-                        glucose=random.randint(71,180)
-                    if glucose == 'Greater than 180 mg/dl':
-                        glucose=random.randint(180,201)
+                    if glucose == 'Less than or equal to 80 mg/dl':
+                        glucose=random.randint(50,80)
+                    if glucose == 'Greater than 80 mg/dl and less than or equal to 100 mg/dl':
+                        glucose=random.randint(81,100)
+                    if glucose == 'Greater than 100 mg/dl and less than or equal to 120 mg/dl':
+                        glucose=random.randint(101,120)
+                    if glucose == 'Greater than 120 mg/dl and less than or equal to 130 mg/dl':
+                        glucose=random.randint(121,130)
+                    if glucose == 'Greater than 130 mg/dl and less than or equal to 145 mg/dl':
+                        glucose=random.randint(130,145)
+                    if glucose == 'Greater than 145 mg/dl and less than or equal to 160 mg/dl':
+                        glucose=random.randint(146,160)
+                    if glucose == 'Greater than 160 mg/dl and less than or equal to 170 mg/dl':
+                        glucose=random.randint(161,170)
+                    if glucose == 'Greater than 170 mg/dl':
+                        glucose=random.randint(171,200)
                     height=request.form["height"]
                     if height == 'Less than or equal to 100cm':
-                        height=1
+                        height=1.0
                     if height == 'Greater than 100cm and less than 200cm':
-                        height=round(random.uniform(1.0,2.0),1)
+                        height=round(random.uniform(1.1,1.9),1)
                     if height == 'Greater than or equal to 200cm':
                         height=round(random.uniform(2.0,3.0),1)
                     weight=request.form["weight"]
                     if weight == 'Less than 50kg':
-                        weight=round(random.uniform(30.0,50.0),1)
+                        weight=round(random.uniform(30.0,49.9),1)
                     if weight == 'Greater than or equal to 50kg and less than 84kg':
-                        weight=round(random.uniform(50.0,85.0),1)
+                        weight=round(random.uniform(50.0,83.9),1)
                     if weight == 'Greater than or equal to 84kg and less than 112kg':
-                        weight=round(random.uniform(85.0,112.0),1)
+                        weight=round(random.uniform(84.1,111.9),1)
                     if weight == 'Greater than 112kg':
                         weight=round(random.uniform(112.0,130.0),1)
                     pedigree=request.form["pedigree"]
@@ -731,12 +741,18 @@ def predict():
                         pedigreevalue=0
                     insulin=request.form["insulin"]
                     if insulin == 'Less than or equal to 20 mU/ml':
-                        insulin=random.randint(2,20)
+                        insulin=random.randint(10,20)
                     if insulin == 'Greater than 20 mU/ml and Less than or equal to 80 mU/ml':
-                        insulin=random.randint(20,81)
-                    if insulin == 'Greater than 80 mU/ml':
-                        insulin=random.randint(81,300)
-                    bmi=round(float(weight)/(float(height)**2),3)
+                        insulin=random.randint(21,80)
+                    if insulin == 'Greater than 80 mU/ml and less than or equal to 150 mU/ml':
+                        insulin=random.randint(81,150)
+                    if insulin == 'Greater than 150 mU/ml and less than or equal to 300 mU/ml':
+                        insulin=random.randint(151,300)
+                    if insulin == 'Greater than 300 mU/ml and less than or equal to 500 mU/ml':
+                        insulin=random.randint(301,500)
+                    if insulin == 'Greater than 500 mU/ml':
+                        insulin=random.randint(501,800)
+                    bmi=round(float(weight)/(float(height)**2),1)
                     patientid=int(request.form['patientsselect'])
                     patientdetails=Patients.query.filter_by(id=patientid).first()
                     patientDoB=patientdetails.dateofbirth
@@ -760,14 +776,21 @@ def predict():
                     else:
                         predstr="high risk of diabetes"
                     # send msg
-                    # message=f"Hello there patient {patientdetails.fname} {patientdetails.lname} , Mugema's Diabetes Prediction is here to inform you that from your recent diagosis on {datetime.now().strftime('%Y-%m-%d')} the predictions have yielded that you are at {predstr} due to the fact that you have {predictionprob}% chances of having diabetes. Remember its important to maintain healthy weight, get regular exercise, eat a healthy diet "
-                    # sendnotification.sendcustomizedsms(patientcontact,message)
+                    message=f"Hello there patient {patientdetails.fname} {patientdetails.lname} , Mugema's Diabetes Prediction is here to inform you that from your recent diagosis on {datetime.now().strftime('%Y-%m-%d')} the predictions have yielded that you are at {predstr} due to the fact that you have a {predictionprob}% chance of having diabetes. Remember its important to maintain healthy weight, get regular exercise, eat a healthy diet. Thank you and together let's fight against diabetes"
+                    response,issent=sendnotification.sendcustomizedsms(patientcontact,message,False)
+                    if issent :
+                        notifications=PatientMessages(title='Health Status Notification',body=message,recipientpat=patientdetails)
+                        db.session.add(notifications)
+                        db.session.commit()
+                        flash("Message sent successfully to patient","success")
+                    else:
+                        notifications=PatientMessages(title='Health Status Notification',body=message,status='Failed',recipientpat=patientdetails)
+                        db.session.add(notifications)
+                        db.session.commit()
+                        flash("Message sending failed","error")
                     return render_template('/doctors/predictdisease.html',pred=predictionvalue[0].item(),prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION',res=[pregnanciesno,glucose,insulin,height,weight,bmi,age,pedigree,predictionvalue[0].item()])
-
                 else:
                     return render_template('/doctors/predictdisease.html',form=form,title='PATIENT HEALTH PREDICTION')
-                            # features=[6,148,72,35,0,33.6,50]
-                    # bloodpressure=request.form["pressurelevels"]
         else:
             flash('Access Denied', 'error')
             abort(403)
@@ -856,32 +879,26 @@ def asyncfetchrecords():
     results =""
     if request.method=='POST':
         qtc_data = request.get_json()
-        # print(qtc_data['Gender'])
-        # print(qtc_data['Outcome'])
         if qtc_data['Gender'] and not qtc_data['Outcome']:
-            # session.query(Customer).join(Invoice).filter(Invoice.amount == 8500)
-            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender'])
+            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender']).all()
             results = {'rows': records}
-
         elif not qtc_data['Gender'] and qtc_data['Outcome']:
-            # records=Predictions.query(Patients.id).join(PatientCredentials.patientid).filter_by(Patients.outcome==qtc_data['Outcome'])
             records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Predictions.outcome==qtc_data['Outcome']).all()
             # records=[tuple(row) for row in records]
-            results = {'rows': records}
-            
+            results = {'rows': records}     
     #         userList = users.query\
     # .join(friendships, users.id==friendships.user_id)\
     # .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
     # .filter(users.id == friendships.friend_id)\
     # .filter(friendships.user_id == userID)\
     # .paginate(page, 1, False)
-            
         elif qtc_data['Gender'] and qtc_data['Outcome']:
-            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender'],Predictions.outcome==qtc_data['Outcome'])
+            records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==qtc_data['Gender'],Predictions.outcome==qtc_data['Outcome']).all()
             results = {'rows': records}
+            
         else:
             return json.dumps(results ,default=str)
-        print (json.dumps(results ,default=str))
+        # print (json.dumps(results ,default=str))
         return json.dumps(results ,default=str)
 @app.route("/doctors/messages")
 @login_required

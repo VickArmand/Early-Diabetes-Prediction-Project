@@ -23,6 +23,11 @@ function filterdetails(){
 
                    var users= JSON.parse(xmlhttp.responseText);
                    console.log(users);
+                   output='';
+                for (var i in users){
+                    output+='<tr> '+'<td>'+users[i].id+'</td>'+'<td>'+users[i].name+'</td>'+'</tr>'
+                }
+                listvalues.innerHTML=output;
                }
             }
     }
@@ -42,6 +47,11 @@ function filterdetails(){
 
                    var users= JSON.parse(xmlhttp.responseText);
                    console.log(users);
+                   output='';
+                for (var i in users){
+                    output+='<tr> '+'<td>'+users[i].id+'</td>'+'<td>'+users[i].name+'</td>'+'</tr>'
+                }
+                listvalues.innerHTML=output;
                }
             }
     }
@@ -59,11 +69,11 @@ function filterdetails(){
             if(xmlhttp.readyState==4 && xmlhttp.status==200){
                 var users= JSON.parse(xmlhttp.responseText);
                 console.log(users);
-                // output='';
-                // for (var i in users){
-                //     output+='<tr> '+'<td>'+users[i].id+'</td>'+'<td>'+users[i].name+'</td>'+'</tr>'
-                // }
-                // tableBody.innerHTML=output;
+                output='';
+                for (var i in users){
+                    output+='<tr> '+'<td>'+users[i].id+'</td>'+'<td>'+users[i].name+'</td>'+'</tr>'
+                }
+                listvalues.innerHTML=output;
             }
         }
             }

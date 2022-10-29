@@ -1,11 +1,11 @@
 {% extends 'doctors/base.html' %}
 {% block content %}
 <div class="container grid place-items-center h-screen">
-  <div class="bg-white py-6 px-12 my-5">
+  <div class="bg-white py-6 px-12 ml-20">
       <form action="{{ url_for('predict') }}" method="post">
         {{form.hidden_tag()}}
         <div class="flex flex-col justify-between gap-1 ">
-          <div class="flex justify-between items-center my-2 gap-4">
+          <div class="flex items-center my-2 gap-4">
               {{form.patientsselect.label()}} 
                {{form.patientsselect(class='py-2 px-8 rounded bg-inputbg')}}   
         </div>
@@ -15,7 +15,7 @@
                {%endfor%}
                {%endif%}
              
-        <div class="flex justify-between items-center my-2 gap-4">
+        <div class="flex items-center my-2 gap-4">
           {{form.pregnancies.label()}} 
                {{form.pregnancies(class='py-2 px-8 rounded bg-inputbg')}}  
               
@@ -25,7 +25,7 @@
         <span class="text-red-500">{{error}}</span>
         {%endfor%}
         {%endif%}
-          <div class="flex justify-between items-center my-2 gap-4">
+          <div class="flex items-center my-2 gap-4">
             {{form.height.label()}} 
                {{form.height(class='py-2 px-8 rounded bg-inputbg')}}  
           </div>
@@ -34,7 +34,7 @@
           <span class="text-red-500">{{error}}</span>
           {%endfor%}
           {%endif%}
-        <div class="flex justify-between items-center my-2 gap-4">
+        <div class="flex items-center my-2 gap-4">
           {{form.weight.label()}} 
           {{form.weight(class='py-2 px-8 rounded bg-inputbg')}}
         </div>
@@ -43,7 +43,7 @@
         <span class="text-red-500">{{error}}</span>
         {%endfor%}
         {%endif%}
-      <div class="flex justify-between items-center my-2 gap-4">
+      <div class="flex items-center my-2 gap-4">
         {{form.glucose.label()}} 
         {{form.glucose(class='py-2 px-8 rounded bg-inputbg')}}
       </div>
@@ -52,7 +52,7 @@
       <span class="text-red-500">{{error}}</span>
       {%endfor%}
       {%endif%}
-      <div class="flex justify-between items-center my-2 gap-4">
+      <div class="flex items-center my-2 gap-4">
         {{form.insulin.label()}} 
         {{form.insulin(class='py-2 px-8 rounded bg-inputbg')}}
       </div>
@@ -62,7 +62,7 @@
       {%endfor%}
       {%endif%}
         </div>
-      <div class="flex justify-between items-center my-2 gap-4">
+      <div class="flex items-center my-2 gap-4">
         {{form.pedigree.label()}} 
         {{form.pedigree(class='py-2 px-8 rounded bg-inputbg')}}
       </div>
@@ -75,15 +75,32 @@
         <div class="flex flex-col items-center  mt-5">
           {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}}
         </div>
+        <div class="flex flex-col items-center  mt-5">
           {%if pred == 0%}
-          <span class="text-green-500"> The patient has {{prob}}% chances of having diabetes hence low risk of Diabetes</span>
+          <span class="text-green-500"> The patient has a {{prob}}% chance of having diabetes hence low risk of Diabetes</span>
           {%endif%}
           {%if pred == 1%}
-          <span class="text-red-500"> The patient has {{prob}}% chances of having diabetes hence high risk of Diabetes</span>
+          <span class="text-red-500"> The patient has a {{prob}}% chance of having diabetes hence high risk of Diabetes</span>
           {%endif%}
           {%for x in res%}
           {{ x }}
           {%endfor%}
+          {% with messages= get_flashed_messages(with_categories=true) %}
+            {%if messages %}
+            {%for category, msg in messages %}
+              {%if category=='warning'%}
+              <p class="text-orange-500">{{msg}}</p>
+              {% elif category=='success' %}
+              <p class="text-green-500">{{msg}}</p>
+              {% elif category=='error' %}
+              <p class="text-red-500">{{msg}}</p>
+              {% else %}
+              <p class="text-blue-500">{{msg}}</p>
+            {%endif%}
+            {%endfor%}
+            {%endif%}
+        {%endwith%}
+      </div>
       </form>
   </div>
  

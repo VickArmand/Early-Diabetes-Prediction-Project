@@ -8,10 +8,22 @@ def sendtestmsg():
     message = "Hello there first test sms"    
     # assign the sms functionality to a variable
     sms = at.SMS
-    response = sms.send(message, [number])
+    response=" "
+    try:
+        response = sms.send(message, [number])
+    except:
+        print("Message sending failed")
+    if response:
+        issent = True
     return response
-def sendcustomizedsms(recipient,message):
+def sendcustomizedsms(recipient,message,issent):
     # assign the sms functionality to a variable
     sms = at.SMS
-    response = sms.send(message, [recipient])
-    return response
+    response=" "
+    try:
+        response = sms.send(message, [recipient])
+    except:
+        print("Message sending failed")
+    if response:
+        issent = True
+    return response,issent
