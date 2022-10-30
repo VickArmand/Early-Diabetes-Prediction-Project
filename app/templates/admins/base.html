@@ -31,9 +31,9 @@
       <img src="{{url_for('static',filename='/images/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg')}}
       " style="width:50px;" alt="">
         <li class="list-none"> <a href="/register">{{current_user.fname +" "+ current_user.lname}}</a></li>
-        <li class="list-none"><a href="{{url_for('adminlogout')}}" class="bg-blue-500 rounded px-4 py-2 text-white">Logout</a></li>
+        <li class="list-none"><a href="{{url_for('admins.adminlogout')}}" class="bg-blue-500 rounded px-4 py-2 text-white">Logout</a></li>
         {%else%}
-        <li class="list-none"> <a href="{{url_for('adminlogin')}}">Login</a></li>
+        <li class="list-none"> <a href="{{url_for('admins.adminlogin')}}">Login</a></li>
 
         {%endif%}
     </ul>

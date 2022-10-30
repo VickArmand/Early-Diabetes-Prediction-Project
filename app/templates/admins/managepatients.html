@@ -18,11 +18,11 @@
         <td class="py-2 px-3">{{ item.registeredpat.fname +" "+ item.registeredpat.lname }}</td>
         <td class="py-2 px-3">{{ item.registeredpat.contact }}</td>
         <td class="py-2 px-3">{{ item.registeredpat.gender }}</td>
-        <td class="py-2 px-3"><a href="{{ url_for('admineditpatient',user_id=item.patientregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a>
+        <td class="py-2 px-3"><a href="{{ url_for('admins.admineditpatient',user_id=item.patientregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a>
           {%if item.status == 'Activated'%}
-         <a href="{{ url_for('admindeactivatepatient',user_id=item.patientregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+         <a href="{{ url_for('admins.admindeactivatepatient',user_id=item.patientregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
          {%else%}
-         <a href="{{ url_for('adminactivatepatient',user_id=item.patientregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">ACTIVATE</a></td>
+         <a href="{{ url_for('admins.adminactivatepatient',user_id=item.patientregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">ACTIVATE</a></td>
          {%endif%}      </tr>
         {%endfor%}
        {%else%}
@@ -31,7 +31,7 @@
        </tbody>
     </table>
     <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-      <a href="{{ url_for('managepatients', page=data.prev_num) }}"
+      <a href="{{ url_for('admins.managepatients', page=data.prev_num) }}"
          class="py-4 px-2 border-r border-white
          {% if data.page == 1 %}disabled{% endif %}">
           &laquo;
@@ -41,12 +41,12 @@
     {% if page_num %}
     <!-- Check for the active page and set the link to "Active"-->
               {% if data.page == page_num %}
-              <a href="{{ url_for('managepatients', page=page_num) }}"
+              <a href="{{ url_for('admins.managepatients', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
               {% else %}
-              <a href="{{ url_for('managepatients', page=page_num) }}"
+              <a href="{{ url_for('admins.managepatients', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
@@ -55,7 +55,7 @@
               ...
           {% endif %}
       {% endfor %}
-      <a href="{{ url_for('managepatients', page=data.next_num) }}"
+      <a href="{{ url_for('admins.managepatients', page=data.next_num) }}"
          class="py-4 px-2
          {% if data.page == data.pages %}disabled{% endif %}">
           &raquo;

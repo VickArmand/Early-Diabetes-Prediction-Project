@@ -10,7 +10,6 @@
             <th class="py-2 px-3">Height</th>
             <th class="py-2 px-3">Weight</th>
             <th class="py-2 px-3">BMI</th>
-            <th class="py-2 px-3">Blood Pressure</th>
             <th class="py-2 px-3">Age</th>
             <th class="py-2 px-3">Outcome</th>
 
@@ -26,7 +25,6 @@
           <td class="py-2 px-3">{{ item.height }}</td>
           <td class="py-2 px-3">{{ item.weight }}</td>
           <td class="py-2 px-3">{{ item.bmi }}</td>
-          <td class="py-2 px-3">{{ item.bloodpressure }}</td>
           <td class="py-2 px-3">{{ item.age }}</td>
           {%if item.outcome  == 1%}
           <td class="py-2 px-3">Diabetic</td>
@@ -41,7 +39,7 @@
        {%endif%}
     </table>
     <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-      <a href="{{ url_for('monitorprogress', page=patients.prev_num) }}"
+      <a href="{{ url_for('patients.monitorprogress', page=patients.prev_num) }}"
          class="py-4 px-2 border-r border-white
          {% if patients.page == 1 %}disabled{% endif %}">
           &laquo;
@@ -51,12 +49,12 @@
     {% if page_num %}
     <!-- Check for the active page and set the link to "Active"-->
               {% if patients.page == page_num %}
-              <a href="{{ url_for('monitorprogress', page=page_num) }}"
+              <a href="{{ url_for('patients.monitorprogress', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
               {% else %}
-              <a href="{{ url_for('monitorprogress', page=page_num) }}"
+              <a href="{{ url_for('patients.monitorprogress', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
@@ -65,7 +63,7 @@
               ...
           {% endif %}
       {% endfor %}
-      <a href="{{ url_for('monitorprogress', page=patients.next_num) }}"
+      <a href="{{ url_for('patients.monitorprogress', page=patients.next_num) }}"
          class="py-4 px-2
          {% if patients.page == patients.pages %}disabled{% endif %}">
           &raquo;

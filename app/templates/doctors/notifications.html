@@ -19,12 +19,8 @@
             <td class="py-2 px-3">{{ item.title }}</td>
             <td class="py-2 px-3">{{ item.recipientpat.fname +" "+ item.recipientpat.lname }}</td>
             <td class="py-2 px-3">{{ item.status }}</td>
-            <td class="py-2 px-3">{{ item.date_posted }}</td>
-            {%if item.outcome  == 1%}
-            <td class="py-2 px-3">Diabetic</td>
-            {%else%}
-            <td class="py-2 px-3">Non-Diabetic</td>
-            {%endif%}
+            <td class="py-2 px-3">{{ item.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+
             </tr>
           </tbody>
           {% endfor %}
@@ -33,7 +29,7 @@
          {%endif%}
       </table>
       <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-        <a href="{{ url_for('patientnotifications', page=msg.prev_num) }}"
+        <a href="{{ url_for('doctors.patientnotifications', page=msg.prev_num) }}"
            class="py-4 px-2 border-r border-white
            {% if msg.page == 1 %}disabled{% endif %}">
             &laquo;
@@ -43,12 +39,12 @@
       {% if page_num %}
       <!-- Check for the active page and set the link to "Active"-->
                 {% if msg.page == page_num %}
-                <a href="{{ url_for('patientnotifications', page=page_num) }}"
+                <a href="{{ url_for('doctors.patientnotifications', page=page_num) }}"
                    class="py-4 px-2 border-r border-white">
                     {{ page_num }}
                 </a>
                 {% else %}
-                <a href="{{ url_for('patientnotifications', page=page_num) }}"
+                <a href="{{ url_for('doctors.patientnotifications', page=page_num) }}"
                    class="py-4 px-2 border-r border-white">
                     {{ page_num }}
                 </a>
@@ -57,7 +53,7 @@
                 ...
             {% endif %}
         {% endfor %}
-        <a href="{{ url_for('patientnotifications', page=msg.next_num) }}"
+        <a href="{{ url_for('doctors.patientnotifications', page=msg.next_num) }}"
            class="py-4 px-2
            {% if msg.page == msg.pages %}disabled{% endif %}">
             &raquo;

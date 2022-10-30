@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="{{url_for('static',filename='/css/style.css')}}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgcolor: '#E5E5E5',
+            inputbg: '#F9F8F8'
+          },
+          boxShadow: {
+          nav:'4px 4px 9px rgba(179, 179, 179, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bgcolor">
+ 
+<div class="container grid place-items-center h-screen w-screen">
+    <div class="bg-white py-20 px-20">
+        <span>You don't have permission to access this page(403)</span>
+        <p>Please check your account and try again</p>
+       
+    </div>
+   
+</div>
+</body>
+</html>

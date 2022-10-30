@@ -26,7 +26,7 @@
   <nav class="width-2 bg-white py-3 px-4 box-shadow-nav flex justify-between sticky top-0">
     <div class="brand-name flex items-center gap-2"><div class="brand-img"></div> MUGEMA'S DIABETES PREDICTION</div>
 <ul class="flex gap-2 items-center justify-end">
-    <li class="list-none"> <a href="/admin/login">Login</a></li>
+    <li class="list-none"> <a href="/admins/login">Login</a></li>
 </ul>
   </nav>  
   <div class="container grid place-items-center h-screen w-screen">
@@ -61,7 +61,6 @@
               </div>
             {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
   
-            <span>Don't have an account? <a href="{{url_for('register')}}" class="text-blue-500">Register Here</a></span>
             <span><a href="/forgotpwd" class="text-blue-500">Forgot your password</a></span>
             {% with messages= get_flashed_messages(with_categories=true) %}
             {%if messages %}

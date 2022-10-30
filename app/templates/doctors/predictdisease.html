@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container grid place-items-center h-screen">
   <div class="bg-white py-6 px-12 ml-20">
-      <form action="{{ url_for('predict') }}" method="post">
+      <form action="{{ url_for('doctors.predict') }}" method="post">
         {{form.hidden_tag()}}
         <div class="flex flex-col justify-between gap-1 ">
           <div class="flex items-center my-2 gap-4">

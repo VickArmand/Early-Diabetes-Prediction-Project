@@ -62,7 +62,6 @@
               </div>
             {{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
   
-            <span>Don't have an account? <a href="{{url_for('register')}}" class="text-blue-500">Register Here</a></span>
             <span><a href="/forgotpwd" class="text-blue-500">Forgot your password</a></span>
             {% with messages= get_flashed_messages(with_categories=true) %}
             {%if messages %}

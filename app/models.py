@@ -1,7 +1,10 @@
 from datetime import datetime
-from app import db,login_manager
 from flask import session
 from flask_login import UserMixin
+# TimedJSONWebSignatureSerializer
+from app import db,login_manager
+from flask import current_app
+from itsdangerous import TimedSerializer as Serializer
 @login_manager.user_loader
 def load_user(patient_id): 
     if "account_type" in session:
@@ -28,6 +31,17 @@ class Patients(db.Model, UserMixin):
     predpatientid=db.relationship('Predictions', backref='predictedpat',lazy=True)
     registeredpatientid=db.relationship('PatientCredentials', backref='registeredpat',lazy=True)
     patientmsgid=db.relationship('PatientMessages', backref='recipientpat',lazy=True)
+    def get_reset_token(self,expires_sec=1800):
+        s=Serializer(current_app.config['SECRET_KEY'],expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+    @staticmethod
+    def verify_reset_token(token):
+        s=Serializer(current_app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return Patients.query.get(user_id)
 
 class Admins(db.Model,UserMixin):
     id=db.Column("id",db.Integer,primary_key=True)

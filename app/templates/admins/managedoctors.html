@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container grid place-items-center my-5">
   <div class="bg-white py-20 px-20">
-    <a href="{{ url_for('newdoctors')}}"class="bg-blue-500 rounded px-4 py-2 text-white">NEW DOCTOR</a>
+    <a href="{{ url_for('admins.newdoctors')}}"class="bg-blue-500 rounded px-4 py-2 text-white">NEW DOCTOR</a>
 
     <table class="table-auto">
       <thead>
@@ -23,11 +23,11 @@
           <td class="py-2 px-3">{{ item.registereddoc.fname +" "+ item.registereddoc.lname }}</td>
           <td class="py-2 px-3">{{ item.registereddoc.contact }}</td>
           <td class="py-2 px-3">{{ item.registereddoc.gender }}</td>
-          <td class="py-2 px-3"><a href="{{ url_for('admineditdoctor',user_id=item.doctorregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a>
+          <td class="py-2 px-3"><a href="{{ url_for('admins.admineditdoctor',user_id=item.doctorregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">EDIT</a>
             {%if item.status == 'Activated'%}
-           <a href="{{ url_for('admindeactivatedoctor',user_id=item.doctorregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
+           <a href="{{ url_for('admins.admindeactivatedoctor',user_id=item.doctorregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">DEACTIVATE</a></td>
            {%else%}
-           <a href="{{ url_for('adminactivatedoctor',user_id=item.doctorregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">ACTIVATE</a></td>
+           <a href="{{ url_for('admins.adminactivatedoctor',user_id=item.doctorregistered)}}"class="bg-red-500 rounded px-4 py-2 text-white">ACTIVATE</a></td>
            {%endif%}        
           </tr>
           {%endfor%}
@@ -38,7 +38,7 @@
        </tbody>
     </table>
     <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-      <a href="{{ url_for('managedoctors', page=data.prev_num) }}"
+      <a href="{{ url_for('admins.managedoctors', page=data.prev_num) }}"
          class="py-4 px-2 border-r border-white
          {% if data.page == 1 %}disabled{% endif %}">
           &laquo;
@@ -48,12 +48,12 @@
     {% if page_num %}
     <!-- Check for the active page and set the link to "Active"-->
               {% if data.page == page_num %}
-              <a href="{{ url_for('managedoctors', page=page_num) }}"
+              <a href="{{ url_for('admins.managedoctors', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
               {% else %}
-              <a href="{{ url_for('managedoctors', page=page_num) }}"
+              <a href="{{ url_for('admins.managedoctors', page=page_num) }}"
                  class="py-4 px-2 border-r border-white">
                   {{ page_num }}
               </a>
@@ -62,7 +62,7 @@
               ...
           {% endif %}
       {% endfor %}
-      <a href="{{ url_for('managedoctors', page=data.next_num) }}"
+      <a href="{{ url_for('admins.managedoctors', page=data.next_num) }}"
          class="py-4 px-2
          {% if data.page == data.pages %}disabled{% endif %}">
           &raquo;
