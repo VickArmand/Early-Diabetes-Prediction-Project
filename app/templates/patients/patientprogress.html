@@ -16,9 +16,9 @@
           </tr>
          
         </thead>
-        {%if patients.items%}
-        {% for item in patients.items %}
+        {%if patients%}
         <tbody>
+        {% for item in patients %}
          <tr class="bg-white border-b dark:border-gray-700">
           <td class="py-2 px-3">{{ item.glucose }}</td>
           <td class="py-2 px-3">{{ item.insulin }}</td>
@@ -32,47 +32,143 @@
           <td class="py-2 px-3">Non-Diabetic</td>
           {%endif%}
           </tr>
-        </tbody>
         {% endfor %}
+      </tbody>
         {%else%}
        <p class="px-4 py-2 text-red">No Records Found</p>
        {%endif%}
     </table>
-    <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
-      <a href="{{ url_for('patients.monitorprogress', page=patients.prev_num) }}"
-         class="py-4 px-2 border-r border-white
-         {% if patients.page == 1 %}disabled{% endif %}">
-          &laquo;
-      </a>
-    <!-- Loop through the number of pages to display a link for each-->
-      {% for page_num in patients.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-    {% if page_num %}
-    <!-- Check for the active page and set the link to "Active"-->
-              {% if patients.page == page_num %}
-              <a href="{{ url_for('patients.monitorprogress', page=page_num) }}"
-                 class="py-4 px-2 border-r border-white">
-                  {{ page_num }}
-              </a>
-              {% else %}
-              <a href="{{ url_for('patients.monitorprogress', page=page_num) }}"
-                 class="py-4 px-2 border-r border-white">
-                  {{ page_num }}
-              </a>
-              {% endif %}
-          {% else %}
-              ...
-          {% endif %}
-      {% endfor %}
-      <a href="{{ url_for('patients.monitorprogress', page=patients.next_num) }}"
-         class="py-4 px-2
-         {% if patients.page == patients.pages %}disabled{% endif %}">
-          &raquo;
-      </a>
+
+    
+  <div class="flex-col justify-between">
+  <div>
+    <div class="py-3 px-2 bg-gray-50 mt-3">Glucose Levels Chart</div>
+    <canvas class="h-28" id="chartBar1"></canvas>
     </div>
-    <p class="">
-     Showing page {{ patients.page }} of {{ patients.pages }}
-    </p>
+    <div>
+    <div class="py-3 px-2 bg-gray-50 mt-3">Weight Levels Chart</div>
+    <canvas class="h-28" id="chartBar2"></canvas>
+    </div>
+    <div>
+    <div class="py-3 px-2 bg-gray-50 mt-3">Insulin Levels Chart</div>
+    <canvas class="h-28" id="chartBar3"></canvas>
     </div>
   </div>
+   
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Chart bar -->
+  <script>
+  let labels = [];
+  let dataset=[];
+  const graphmetricswrapper = document.querySelector('table tbody');
+  const graphmetricswrapper2 = graphmetricswrapper.getElementsByTagName('tr');
+  let j=0
+  for(let i=0;i<graphmetricswrapper2.length;i++){
+    labels.push(i)
+    dataset.push(graphmetricswrapper2[i].children[j].innerText)
+    console.log(graphmetricswrapper2[i].children)
+  }
+ 
+const data = {
+  labels: labels,
+  datasets: [{
+    label: 'Glucose Levels Chart',
+    data: dataset,
+    backgroundColor: [
+      'rgba(255, 99, 132, 0.2)',
+      'rgba(255, 159, 64, 0.2)',
+      'rgba(255, 205, 86, 0.2)',
+      'rgba(75, 192, 192, 0.2)',
+      'rgba(54, 162, 235, 0.2)',
+      'rgba(153, 102, 255, 0.2)',
+      'rgba(201, 203, 207, 0.2)'
+    ],
+    borderColor: [
+      'rgb(255, 99, 132)',
+      'rgb(255, 159, 64)',
+      'rgb(255, 205, 86)',
+      'rgb(75, 192, 192)',
+      'rgb(54, 162, 235)',
+      'rgb(153, 102, 255)',
+      'rgb(201, 203, 207)'
+    ],
+    borderWidth: 1
+  }]
+};
+const config = {
+  type: 'bar',
+  data: data,
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  },
+};
+labels=[]
+dataset=[]
+j=3
+for(let i=0;i<graphmetricswrapper2.length;i++){
+  labels.push(i)
+  dataset.push(graphmetricswrapper2[i].children[j].innerText)
+  console.log(graphmetricswrapper2[i].children)
+}
+
+
+const labels2 = labels;
+const data2 = {
+  labels: labels2,
+  datasets: [{
+    label: 'Weight Levels Chart',
+    data: dataset,
+    fill: false,
+    borderColor: 'rgb(75, 192, 192)',
+    tension: 0.1
+  }]
+};
+const config2 = {
+  type: 'line',
+  data: data2,
+};
+
+labels=[]
+dataset=[]
+j=1
+for(let i=0;i<graphmetricswrapper2.length;i++){
+  labels.push(i)
+  dataset.push(graphmetricswrapper2[i].children[j].innerText)
+  console.log(graphmetricswrapper2[i].children)
+}
+
+
+const labels3 = labels;
+const data3 = {
+  labels: labels3,
+  datasets: [{
+    label: 'Insulin Levels Chart',
+    data: dataset,
+    fill: false,
+    borderColor: 'rgb(255, 159, 64)',
+    tension: 0.1
+  }]
+};
+const config3 = {
+  type: 'line',
+  data: data3,
+};
+var chartBar1 = new Chart(
+document.getElementById("chartBar1"),
+config);  
+var chartBar2 = new Chart(
+document.getElementById("chartBar2"),
+config2);
+var chartBar2 = new Chart(
+document.getElementById("chartBar3"),
+config3);
+</script> 
 {% endblock content %}
 

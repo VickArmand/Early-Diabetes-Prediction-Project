@@ -13,17 +13,16 @@
             
           </thead>
           {%if msg.items%}
-          {% for item in msg.items %}
           <tbody>
+          {% for item in msg.items %}
            <tr class="bg-white border-b  dark:border-gray-700">
             <td class="py-2 px-3">{{ item.title }}</td>
             <td class="py-2 px-3">{{ item.recipientpat.fname +" "+ item.recipientpat.lname }}</td>
             <td class="py-2 px-3">{{ item.status }}</td>
             <td class="py-2 px-3">{{ item.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-
             </tr>
-          </tbody>
           {% endfor %}
+        </tbody>
           {%else%}
          <p class="px-4 py-2 text-red">No Records Found</p>
          {%endif%}

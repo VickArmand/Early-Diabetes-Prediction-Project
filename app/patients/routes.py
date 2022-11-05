@@ -148,8 +148,7 @@ def editprofile():
 def monitorprogress():
     if "account_type" in session:
         if session["account_type"] == "Patient":
-            page = request.args.get('page', 1, type=int)
-            patientdata=Predictions.query.filter_by(patientpred=current_user.id).order_by(Predictions.date_predicted.desc()).paginate(page=page, per_page=5)
+            patientdata=Predictions.query.filter_by(patientpred=current_user.id).order_by(Predictions.date_predicted.desc()).limit(5)
             return render_template('/patients/patientprogress.html',patients=patientdata)
         else:
                 flash('Access Denied', 'error')

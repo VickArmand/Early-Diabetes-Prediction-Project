@@ -27,7 +27,8 @@
           <td class="py-2 px-3"> <a href="{{ url_for('doctors.predictwithid',patient_id=item.patientregistered)}}"class="bg-green-500 rounded px-4 py-2 text-white">PREDICT</a></td>
          {%else%}
 
-         {%endif%}      </tr>
+         {%endif%}
+              </tr>
         {%endfor%}
        {%else%}
        <p class="px-4 py-2 text-red">No Records Found</p>

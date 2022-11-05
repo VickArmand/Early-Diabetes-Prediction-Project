@@ -1,8 +1,8 @@
 {% extends 'doctors/base.html' %}
 {% block content %}
 <div class="grid place-content-center ">
-  <div class="bg-white py-6 px-12 my-5">
-    <form action="">
+  <div class="bg-white py-6 px-6 my-5 ml-20">
+    <!-- <form action="">
       <div class="flex justify-between gap-2 items-center">
         <div>
           <label for="">Gender</label>
@@ -19,9 +19,25 @@
             <option value="1">Diabetic</option>
             <option value="0">Non-diabetic</option>
           </select>
-        </div>
-        <button type="button" class="bg-blue-500 rounded px-4 py-2 text-white" onclick="filterdetails()">FILTER</button>
+        </div> 
+        <button type="button" class="bg-blue-500 rounded px-4 py-2 text-white" onclick="filterdetails()">FILTER</button>-->
+        <form action="{{ url_for('doctors.fetchrecords') }}" method="post">
+          {{form.hidden_tag()}}
+          <div class="flex justify-between gap-2 items-center">
+            <div>
+                {{form.genderselect.label()}} 
+                 {{form.genderselect(class='py-2 px-2 rounded bg-inputbg')}} 
       </div>
+      <div>
+        {{form.outcomeselect.label()}} 
+         {{form.outcomeselect(class='py-2 px-2 rounded bg-inputbg')}} 
+</div>
+<div>
+  {{form.countyselect.label()}} 
+   {{form.countyselect(class='py-2 px-2 rounded bg-inputbg')}} 
+</div>
+{{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
+</div>
       </form>
    
       <table class="table-auto" id='reportstable'>
@@ -36,9 +52,10 @@
             </tr>
            
           </thead>
+          {%if patients%}
           {%if patients.items%}
-          {% for item in patients.items %}
           <tbody>
+          {% for item in patients.items %}
            <tr class="bg-white border-b  dark:border-gray-700">
             <td class="py-2 px-2">{{ item.predictedpat.fname +" "+ item.predictedpat.lname }}</td>
             <td class="py-2 px-2">{{ item.predictedpat.contact }}</td>
@@ -51,11 +68,13 @@
             {%endif%}
             <td class="py-2 px-2">{{ item.date_predicted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
             </tr>
-          </tbody>
+          
           {% endfor %}
+        </tbody>
           {%else%}
          <p class="px-4 py-2 text-red">No Records Found</p>
          {%endif%}
+         
       </table>
       <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
         <a href="{{ url_for('doctors.doctorsreports', page=patients.prev_num) }}"
@@ -91,9 +110,71 @@
       <p class="">
        Showing page {{ patients.page }} of {{ patients.pages }}
       </p>
-      <div id="listvalues">
-
-      </div>
+      <p class="">
+        Total records are:  {{patients.total }}
+       </p>
+      {%endif%}
+      {%if filteredpatients%}
+      {%if filteredpatients.items%}
+      <tbody>
+      {% for item in filteredpatients.items %}
+       <tr class="bg-white border-b  dark:border-gray-700">
+        <td class="py-2 px-2">{{ item.fname +" "+ item.lname }}</td>
+        <td class="py-2 px-2">{{ item.contact }}</td>
+        <td class="py-2 px-2">{{ item.gender }}</td>
+        <td class="py-2 px-2">{{ item.county }}</td>
+        {%if item.outcome  == 1%}
+        <td class="py-2 px-2">Diabetic</td>
+        {%else%}
+        <td class="py-2 px-2">Non-Diabetic</td>
+        {%endif%}
+        <td class="py-2 px-2">{{ item.date_predicted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+      
+      {% endfor %}
+    </tbody>
+      {%else%}
+     <p class="px-4 py-2 text-red">No Records Found</p>
+     {%endif%}
+  </table>
+  <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
+    <a href="{{ url_for('doctors.fetchrecords', page=filteredpatients.prev_num) }}"
+       class="py-4 px-2 border-r border-white
+       {% if filteredpatients.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
+  <!-- Loop through the number of pages to display a link for each-->
+    {% for page_num in filteredpatients.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+  {% if page_num %}
+  <!-- Check for the active page and set the link to "Active"-->
+            {% if filteredpatients.page == page_num %}
+            <a href="{{ url_for('doctors.fetchrecords', page=page_num) }}"
+               class="py-4 px-2 border-r border-white">
+                {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('doctors.fetchrecords', page=page_num) }}"
+               class="py-4 px-2 border-r border-white">
+                {{ page_num }}
+            </a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('doctors.fetchrecords', page=filteredpatients.next_num) }}"
+       class="py-4 px-2
+       {% if filteredpatients.page == filteredpatients.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+  </div>
+  <p class="">
+   Showing page {{ filteredpatients.page }} of {{ filteredpatients.pages }}
+  </p>
+  <p class="">
+    Total records are:  {{ filteredpatients.total }}
+   </p>
+  {% endif %}
   </div>
  
 </div>

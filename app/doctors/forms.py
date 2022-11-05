@@ -36,7 +36,12 @@ class HealthPredictionForm(FlaskForm):
     ('Greater than 500 mU/ml','Greater than 500 mU/ml')])
     pedigree=RadioField('Do you have a close relative with diabetes(Parents or Siblings)',validators=[DataRequired()], choices=[('Yes','Yes'),('No','No')])
     submit=SubmitField('PREDICT')
-
+    def validate_pregnancies(self,patientsselect,pregnancies):
+        print("DFGHJKLKJHGFDSDFGH")
+        ispresentDoc=Doctors.query.filter_by(id=int(patientsselect.data)).first()
+        print(ispresentDoc.gender)
+        if ispresentDoc.gender == 'Male' and int(pregnancies.data) != 0:
+            raise ValidationError('Invalid pregnancy value for male patient')
 class DoctorUpdateForm(FlaskForm):
     username=StringField('Username',validators=[DataRequired(),Length(min=3, max=20)])
     email=StringField('Email',validators=[DataRequired(),Email()])
@@ -59,3 +64,8 @@ class ChangePasswordForm(FlaskForm):
     new_password=PasswordField('New Password',validators=[DataRequired(),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     confirm_new_password=PasswordField('Confirm New Password',validators=[DataRequired(),EqualTo('new_password'),Length(min=8, max=20),Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")])
     submit=SubmitField('CHANGE PASSWORD') 
+class ReportForm(FlaskForm):
+    genderselect=SelectField('Gender',validators=[], choices=[('','---Select A Gender---'),('Male','Male'),('Female','Female')])
+    outcomeselect=SelectField('Outcome',validators=[], choices=[('','---Select A Outcome---'),('1','Diabetic'),('0','Non-Diabetic')])
+    countyselect=SelectField('County',validators=[], choices=[('','---Select A County---'),('Mombasa','Mombasa'),('Kwale','Kwale'),('Kilifi','Kilifi'),('Tana-River','Tana-River'),('Lamu','Lamu'),('Taita Taveta','Taita Taveta'),('Garissa','Garissa'),('Wajir','Wajir'),('Mandera','Mandera'),('Marsabit','Marsabit'),('Isiolo','Isiolo'),('Meru','Meru'),('Tharaka-Nithi','Tharaka-Nithi'),('Embu','Embu'),('Kitui','Kitui'),('Machakos','Machakos'),('Makueni','Makueni'),('Nyandarua','Nyandarua'),('Nyeri','Nyeri'),('Kirinyaga','Kirinyaga'),("Murang'a","Murang'a"),('Kiambu','Kiambu'),('Turkana','Turkana'),('West Pokot','West Pokot'),('Samburu','Samburu'),('Trans-Nzoia','Trans-Nzoia'),('Uasin Gishu','Uasin Gishu'),('Elgeyo-Marakwet','Elgeyo-Marakwet'),('Nandi','Nandi'),('Baringo','Baringo'),('Laikipia','Laikipia'),('Nakuru','Nakuru'),('Narok','Narok'),('Kajiado','Kajiado'),('Kericho','Kericho'),('Bomet','Bomet'),('Kakamega','Kakamega'),('Vihiga','Vihiga'),('Bungoma','Bungoma'),('Busia','Busia'),('Siaya','Siaya'),('Kisumu','Kisumu'),('Homa Bay','Homa Bay'),('Migori','Migori'),('Kisii','Kisii'),('Nyamira','Nyamira'),('Nairobi','Nairobi'),])
+    submit=SubmitField('FILTER')

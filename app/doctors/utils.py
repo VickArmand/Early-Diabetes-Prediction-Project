@@ -13,8 +13,8 @@ import pickle as pk
 import os
 import sys
 sys.setrecursionlimit(10000)
-api_key = os.environ.get('api-key')
-username = os.environ.get('username')
+api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
+username = "diabetesproj"
 os.environ.get('EMAIL_PASS')
 # Initialize the Africas Talking client with the required credentials
 at.initialize(username, api_key)
@@ -48,11 +48,11 @@ def datapreprocessing(diabetesdataurl):
 def train(X,Y):  
     X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
     classifier=svm.SVC(probability=True,kernel='linear')
-    classifier.fit(X_train.values,Y_train.values)
-    testpreds=classifier.predict(X_test)
+    classifier.fit(X_train.values,Y_train)
+    testpreds=classifier.predict(X_test.values)
     testaccuracy=round(accuracy_score(Y_test,testpreds)*100,2)
     # f1score= f1_score(Y_test,testpreds, average=None)
-    mse=round(mean_squared_error(Y_test,testpreds),2)       
+    mse=round(mean_squared_error(Y_test.values,testpreds),2)       
     modelspath='./app/static/ML Model'
     modelfile= "diabetespredmodelusingxgboost.pkl"
     modelpathfile=os.path.join(modelspath,modelfile)
@@ -68,7 +68,7 @@ def train(X,Y):
 
 def computemodelmetrics(X,Y):
     X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,stratify=Y,random_state=42)
-    modelpipe1=Pipeline([('model', LogisticRegression()),])
+    modelpipe1=Pipeline([('model', LogisticRegression(max_iter=10000)),])
     modelpipe3=Pipeline([ ('model', svm.SVC(kernel='linear')),])
     modelpipe4=Pipeline([('model', RandomForestClassifier(n_estimators=200,criterion="entropy")),])
     modelpipe5=Pipeline([('model', KNeighborsClassifier(n_neighbors=2,metric="minkowski",p=2)),])
@@ -79,7 +79,7 @@ def computemodelmetrics(X,Y):
     modelpipe5.fit(X_train, Y_train)
     testpred1=modelpipe1.predict(X_test)
     # testpred2=modelpipe2.predict(X_test)
-    testpred3=modelpipe3.predict(X_test)
+    testpred3=modelpipe3.predict(X_test.values)
     testpred4=modelpipe4.predict(X_test)
     testpred5=modelpipe5.predict(X_test)
     accuracy={
