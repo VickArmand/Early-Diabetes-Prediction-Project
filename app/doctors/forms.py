@@ -1,6 +1,6 @@
 from app.models import *
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, RadioField,IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, RadioField,IntegerField,validators
 from wtforms.widgets import NumberInput
 from wtforms.validators import DataRequired, Length,Email, EqualTo, ValidationError, Regexp
 import phonenumbers

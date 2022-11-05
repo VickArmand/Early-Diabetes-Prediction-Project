@@ -172,18 +172,18 @@ def predict():
                             predstr="high risk of diabetes"
                         # send msg
                         message=f"Hello there patient {patientdetails.fname} {patientdetails.lname} , Mugema's Diabetes Prediction is here to inform you that from your recent diagosis on {datetime.now().strftime('%Y-%m-%d')} the predictions have yielded that you are at {predstr} due to the fact that you have a {predictionprob}% chance of having diabetes. Remember its important to maintain healthy weight, get regular exercise, eat a healthy diet. Thank you and together let's fight against diabetes"
-                        # response,issent=sendcustomizedsms(patientcontact,message,False)
-                        # print(response)
-                        # if issent :
-                        #     notifications=PatientMessages(title='Health Status Notification',body=message,recipientpat=patientdetails)
-                        #     db.session.add(notifications)
-                        #     db.session.commit()
-                        #     flash("Message sent successfully to patient","success")
-                        # else:
-                        #     notifications=PatientMessages(title='Health Status Notification',body=message,status='Failed',recipientpat=patientdetails)
-                        #     db.session.add(notifications)
-                        #     db.session.commit()
-                        #     flash("Message sending failed","error")
+                        response,issent=sendcustomizedsms(patientcontact,message,False)
+                        print(response)
+                        if issent :
+                            notifications=PatientMessages(title='Health Status Notification',body=message,recipientpat=patientdetails)
+                            db.session.add(notifications)
+                            db.session.commit()
+                            flash("Message sent successfully to patient","success")
+                        else:
+                            notifications=PatientMessages(title='Health Status Notification',body=message,status='Failed',recipientpat=patientdetails)
+                            db.session.add(notifications)
+                            db.session.commit()
+                            flash("Message sending failed","error")
                         return render_template('/doctors/predictdisease.html',pred=predictionvalue[0].item(),prob=predictionprob,form=form,title='PATIENT HEALTH PREDICTION',res=[pregnanciesno,glucose,insulin,height,weight,bmi,age,pedigree,predictionvalue[0].item()])
                 else:
                     return render_template('/doctors/predictdisease.html',form=form,title='PATIENT HEALTH PREDICTION')
