@@ -36,34 +36,34 @@
       {% endfor %}
     </tbody>
   </table>
-     <div class="py-3 px-2 bg-gray-50">Accuracy chart</div>
+     <div class="py-3 px-2 bg-gray-50">Accuracy chart
      <canvas class="h-28" id="chartBar1"></canvas>
    </div>
-
-   <div class="py-3 px-2 bg-gray-50">Mean Squared Error chart</div>
+   <table class="table-auto mt-3" id="msetable">
+    <h3 class="text-lg text-center font-bold">Mean Squred Error</h3>
+    <thead>
+      <tr class="bg-white border-b  dark:border-gray-700">
+        <th class="py-1  px-1">Logistic Regression</th>
+        <th class="py-1  px-1">Support Vector Machine</th>
+        <th class="py-1  px-1">Random Forest</th>
+        <th class="py-1  px-1">K-Nearest Neighbours</th>
+      </tr>
+    </thead>
+    <tbody>
+    {%for x in evaluationmetrics[1]%}
+     <tr class="bg-white border-b  dark:border-gray-700">
+      <td class="py-1  px-1">{{x['Logistic Regression']}}</td>
+      <td class="py-1  px-1">{{x['SVM']}}</td>
+      <td class="py-1  px-1">{{x['Random Forest']}}</td>
+      <td class="py-1  px-1">{{x['K-Nearest Neighbours']}}</td>
+      </tr>
+    {% endfor %}
+   </tbody>
+  </table>
+   <div class="py-3 px-2 bg-gray-50">Mean Squared Error chart
    <canvas class="h-28" id="chartBar2"></canvas>
  </div>
- <table class="table-auto mt-3" id="msetable">
-  <h3 class="text-lg text-center font-bold">Mean Squred Error</h3>
-  <thead>
-    <tr class="bg-white border-b  dark:border-gray-700">
-      <th class="py-1  px-1">Logistic Regression</th>
-      <th class="py-1  px-1">Support Vector Machine</th>
-      <th class="py-1  px-1">Random Forest</th>
-      <th class="py-1  px-1">K-Nearest Neighbours</th>
-    </tr>
-  </thead>
-  <tbody>
-  {%for x in evaluationmetrics[1]%}
-   <tr class="bg-white border-b  dark:border-gray-700">
-    <td class="py-1  px-1">{{x['Logistic Regression']}}</td>
-    <td class="py-1  px-1">{{x['SVM']}}</td>
-    <td class="py-1  px-1">{{x['Random Forest']}}</td>
-    <td class="py-1  px-1">{{x['K-Nearest Neighbours']}}</td>
-    </tr>
-  {% endfor %}
- </tbody>
-</table>
+
         {%endif%}
        
       </div>

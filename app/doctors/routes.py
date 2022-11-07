@@ -18,6 +18,7 @@ modelspath='./app/static/ML Model'
 modelfile= "diabetespredmodelusingxgboost.pkl"
 modelpathfile=os.path.join(modelspath,modelfile)
 # Doctors routes
+random.seed(7)
 @doctors.route("/doctors/login",methods=["POST","GET"])
 def doctorlogin():
     form=DoctorLoginForm()
