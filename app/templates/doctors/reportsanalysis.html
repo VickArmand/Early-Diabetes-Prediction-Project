@@ -1,0 +1,117 @@
+{% extends 'doctors/base.html' %}
+{% block content %}
+<div class="grid place-content-center ">
+  <div class="bg-white py-6 px-6 my-5 ml-20">
+
+      
+      <form action="{{ url_for('doctors.fetchrecords') }}" method="POST">
+       
+        <div class="flex justify-between gap-2 items-center">
+          <div>
+              {{form.genderselect.label()}} 
+               {{form.genderselect(class='py-2 px-2 rounded bg-inputbg')}} 
+    </div>
+    <div>
+      {{form.outcomeselect.label()}} 
+       {{form.outcomeselect(class='py-2 px-2 rounded bg-inputbg')}} 
+</div>
+<div>
+{{form.countyselect.label()}} 
+ {{form.countyselect(class='py-2 px-2 rounded bg-inputbg')}} 
+</div>
+{{form.submit(class="bg-blue-500 rounded px-4 py-2 text-white")}} 
+
+  </div>
+
+  <div class="flex justify-between gap-2 items-center mt-2">
+    <div>
+    Pagination Number<select name="paginationnum" class='py-2 px-2 rounded bg-inputbg'>
+        {% for p in range(filteredpatients.pages+1) %}
+        <option value="{{ p }}"> {{ p }} </option>
+        {% endfor %}
+       </select>
+    </div>
+    <button class="bg-blue-500 rounded px-4 py-2 text-white">VIEW PAGINATION</button>
+    </div>
+
+     
+    </form>
+      
+      <table class="table-auto" id='reportstable'>
+        <thead >
+         <tr class="bg-white border-b  dark:border-gray-700">
+            <th class="py-2 px-2">Patient Name</th>
+            <th class="py-2 px-2">Phone Number</th>
+            <th class="py-2 px-2">Gender</th>
+            <th class="py-2 px-2">County</th>
+            <th class="py-2 px-2">Outcome</th>
+            <th class="py-2 px-2">Timestamp</th>
+          </tr>
+         
+        </thead>
+      <tbody>
+        {%if filteredpatients%}
+        {%if filteredpatients.items%}
+      {% for item in filteredpatients.items %}
+       <tr class="bg-white border-b  dark:border-gray-700">
+        <td class="py-2 px-2">{{ item.fname +" "+ item.lname }}</td>
+        <td class="py-2 px-2">{{ item.contact }}</td>
+        <td class="py-2 px-2">{{ item.gender }}</td>
+        <td class="py-2 px-2">{{ item.county }}</td>
+        {%if item.outcome  == 1%}
+        <td class="py-2 px-2">Diabetic</td>
+        {%else%}
+        <td class="py-2 px-2">Non-Diabetic</td>
+        {%endif%}
+        <td class="py-2 px-2">{{ item.date_predicted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+      
+      {% endfor %}
+    </tbody>
+      {%else%}
+     <p class="px-4 py-2 text-red">No Records Found</p>
+     {%endif%}
+  </table>
+  <div class="bg-gray-300 border border-transparent float-right mt-1 text-lg">
+    <a href="{{ url_for('doctors.fetchrecords', page=filteredpatients.prev_num) }}"
+       class="py-4 px-2 border-r border-white
+       {% if filteredpatients.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
+  <!-- Loop through the number of pages to display a link for each-->
+    {% for page_num in filteredpatients.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+  {% if page_num %}
+  <!-- Check for the active page and set the link to "Active"-->
+            {% if filteredpatients.page == page_num %}
+            <a href="{{ url_for('doctors.fetchrecords', page=page_num,) }}" 
+            class="py-4 px-2 border-r border-white text-blue-500">
+               {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('doctors.fetchrecords', page=page_num) }}" 
+            class="py-4 px-2 border-r border-white">
+               {{ page_num }}
+            </a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('doctors.fetchrecords', page=filteredpatients.next_num) }}"
+       class="py-4 px-2
+       {% if filteredpatients.page == filteredpatients.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+  </div>
+  <p class="">
+   Showing page {{ filteredpatients.page }} of {{ filteredpatients.pages }}
+  </p>
+  <p class="">
+    Total records are:  {{ filteredpatients.total }}
+   </p>
+   
+
+    {% endif %}
+</div>
+<script src="{{ url_for('static', filename='js/doctorsreports.js') }}"></script>
+{% endblock content %}

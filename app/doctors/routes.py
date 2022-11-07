@@ -9,6 +9,7 @@ from app.doctors.forms import *
 from flask_login import login_user,current_user,logout_user,login_required
 import random
 from app.doctors.utils import *
+from werkzeug.exceptions import BadRequestKeyError
 from flask_mail import Message
 datasetpath='./app/static/Datasets'
 datasetfile= "diabetes.csv"
@@ -350,19 +351,28 @@ def fetchrecords():
             form=ReportForm()
             records =[]
             if request.method=='POST':
-                page = request.args.get('page', 1, type=int)
-
                 gender = request.form["genderselect"]
                 outcome = request.form["outcomeselect"]
                 county = request.form["countyselect"]
+                page=""
+                try:
+                    page = int(request.form["paginationnum"]) if request.form["paginationnum"] else 1
+                except BadRequestKeyError:
+                    page=1
+                
+                print("sdfghj")
                 if gender and not outcome and not county:
                     records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.gender, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==gender).paginate(page=page, per_page=5)
-
+                elif gender and outcome and not county:
+                    records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==gender,Predictions.outcome==outcome).paginate(page=page, per_page=5)
+                elif gender and not outcome and county:
+                    records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==gender,Patients.county==county).paginate(page=page, per_page=5)
                 elif not gender and outcome and not county:
                     records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Predictions.outcome==outcome).paginate(page=page, per_page=5)
+                elif not gender and outcome and county:
+                    records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Predictions.outcome==outcome, Patients.county==county).paginate(page=page, per_page=5)
                 elif not gender and not outcome and county:
                     records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.county, Patients.gender, Predictions.outcome,Predictions.date_predicted).filter(Patients.county==county).paginate(page=page, per_page=5)
-                            
             #         userList = users.query\
             # .join(friendships, users.id==friendships.user_id)\
             # .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
@@ -373,8 +383,8 @@ def fetchrecords():
                     records=Predictions.query.join(Patients, Patients.id==Predictions.patientpred).add_columns(Patients.fname, Patients.lname, Patients.contact, Patients.gender, Patients.county, Predictions.outcome,Predictions.date_predicted).filter(Patients.gender==gender,Predictions.outcome==outcome,Patients.county==county).paginate(page=page, per_page=5)
                     
                 else:
-                    return render_template('/doctors/reports.html',filteredpatients=records, form=form, title='PATIENT REPORTS')
-            return render_template('/doctors/reports.html',filteredpatients=records, form=form, title='PATIENT REPORTS')
+                    return render_template('/doctors/reportsanalysis.html',filteredpatients=records, form=form, title='PATIENT REPORTS')
+            return render_template('/doctors/reportsanalysis.html',filteredpatients=records, form=form, title='PATIENT REPORTS')
         else:
             flash('Access Denied', 'error')
             abort(403)
