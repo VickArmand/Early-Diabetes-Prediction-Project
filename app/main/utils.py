@@ -1,6 +1,6 @@
 import africastalking as at
-api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
-username = "diabetesproj"
+api_key = os.environ.get('AT_API_KEY')
+username = os.environ.get('AT_USERNAME')
 # Initialize the Africas Talking client with the required credentials
 at.initialize(username, api_key)
 def sendtestmsg():

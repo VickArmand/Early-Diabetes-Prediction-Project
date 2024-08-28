@@ -1,6 +1,9 @@
 from app import create_app,db
 import os
+from dotenv import load_dotenv
+
 # importing the app variable in the __init__.py
+load_dotenv()
 app=create_app()
 if __name__ == "__main__":
     # for creating the db

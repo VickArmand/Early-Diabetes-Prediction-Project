@@ -13,8 +13,8 @@ import pickle as pk
 import os
 import sys
 sys.setrecursionlimit(10000)
-api_key = "aaedd80febe6e60d009ea18c8eae0561619c2058bd6bf0ce24d86f12b2c9b4e1"
-username = "diabetesproj"
+api_key = os.environ.get('AT_API_KEY')
+username = os.environ.get('AT_USERNAME')
 os.environ.get('EMAIL_PASS')
 # Initialize the Africas Talking client with the required credentials
 at.initialize(username, api_key)
